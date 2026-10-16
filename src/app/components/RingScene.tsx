@@ -4,46 +4,52 @@ import { useRef, type RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import type { Mesh } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
+import { FINGERS, ringPosition, type Finger } from "@/app/lib/fingers";
+import { toScene } from "@/app/lib/coords";
 
 type Props = {
   handRef: RefObject<NormalizedLandmark[] | null>;
 };
+type MarkerProps = Props & { finger: Finger }; 
 
-function PalmOrb ({ handRef }: Props) {
-    const meshRef = useRef<Mesh>(null);
 
-    useFrame((state) => {
-        const mesh = meshRef.current;
-        if (!mesh) return;
 
-        const palm = handRef.current?.[9];
-        if (!palm) {
-            mesh.visible = false;
-        return;            
+function RingMarker({ handRef, finger }: MarkerProps) {
+  const meshRef = useRef<Mesh>(null);
+
+  useFrame((state) => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+
+    const landmarks = handRef.current;
+    
+    if (!landmarks) {
+        mesh.visible = false;
+        return;
         }
         mesh.visible = true;
 
+        const pos = ringPosition(landmarks, finger);
+        const scenePos = toScene(pos, state.size);   // ← ใช้ state.size ได้เลย
+        mesh.position.set(scenePos.x, scenePos.y, 0);
 
-        const { width, height } = state.size;
-        const x = (0.5 - palm.x) * width;
-        const y = (0.5 - palm.y) * height;
-        mesh.position.set(x, y, 0);
+  });
 
-    });
-
-    return(
-        <mesh ref={meshRef}>
-            <sphereGeometry args={[40, 32, 32]} />        {/* รัศมี 40px */}
-            <meshBasicMaterial color="#39ff14" />          {/* เขียว Green Lantern */}
-        </mesh>
-    );
+   return (
+    <mesh ref={meshRef}>
+      <torusGeometry args={[14, 3, 12, 32]} />   {/* ห่วงรัศมี 14px หนา 3px */}
+      <meshBasicMaterial color="#39ff14" wireframe />
+    </mesh>
+  );
 }
 
 export function RingScene({ handRef }: Props) {
   return (
     <div className="pointer-events-none absolute inset-0">
       <Canvas orthographic camera={{ position: [0, 0, 100], zoom: 1 }}>
-        <PalmOrb handRef={handRef} />
+        {FINGERS.map((finger) => (
+          <RingMarker key={finger.name} handRef={handRef} finger={finger} />
+        ))}
       </Canvas>
     </div>
   );

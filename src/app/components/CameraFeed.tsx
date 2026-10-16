@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useHandTracking } from "../hooks/useHandTracking";
-import { RingScene } from "./RingScene";
+import { RingScene } from "./RingScene"; 
 
 export function CameraFeed() {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -41,11 +41,10 @@ export function CameraFeed() {
                 muted
                 className="h-full w-full object-cover -scale-x-100"
             />
-            <RingScene handRef={handRef} />
+            <RingScene handRef={handRef} />  
             <p className="absolute top-4 left-4 font-mono text-green-400">
                 {status} · {gesture ?? "no hand"}
             </p>
         </div>
     );
-
 }
