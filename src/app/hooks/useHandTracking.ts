@@ -23,11 +23,13 @@ export function useHandTracking(
     let frameId = 0;
     let lastGesture: string | null = null;
     let cancelled = false;
+    let lastVideoTime = -1;
 
     function loop(){
         const video = videoRef.current;
-        if(recognizer && video && !cancelled){
-            const result = recognizer.recognizeForVideo(video, performance.now());   // ← เพิ่มบรรทัดนี้กลับมา
+        if (recognizer && video && !cancelled && video.readyState >= 2 && video.currentTime !== lastVideoTime) {
+                lastVideoTime = video.currentTime;
+            const result = recognizer.recognizeForVideo(video, performance.now());
             const name = result.gestures[0]?.[0]?.categoryName ?? null;
             handRef.current = result.landmarks[0] ?? null;
 
