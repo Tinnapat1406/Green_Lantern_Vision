@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useHandTracking } from "../hooks/useHandTracking";
 
 export function CameraFeed() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [status, setStatus] = useState("starting");
-
+     const gesture = useHandTracking(videoRef, status === "ready"); 
+     
     useEffect(() => {
         let stream: MediaStream | null = null;
 
@@ -30,14 +32,16 @@ export function CameraFeed() {
 
     return(
          <div className="relative h-screen w-screen bg-black">
-      <video
-        ref={videoRef}
-        playsInline
-        muted
-        className="h-full w-full object-cover -scale-x-100"
-      />
-      <p className="absolute top-4 left-4 font-mono text-green-400">{status}</p>
-    </div>
+            <video
+                ref={videoRef}
+                playsInline
+                muted
+                className="h-full w-full object-cover -scale-x-100"
+            />
+            <p className="absolute top-4 left-4 font-mono text-green-400">
+                {status} · {gesture ?? "no hand"}
+            </p>
+        </div>
     );
 
 }
