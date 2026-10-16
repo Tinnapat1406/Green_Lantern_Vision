@@ -12,12 +12,12 @@ export function CameraFeed() {
         async function start() {
 
             try { 
-                const s = await navigator.mediaDevices.getUserMedia({ video: true });
-                await videoRef.current!.srcObject.play();
-                videoRef.current!.srcObject = s;
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoRef.current!.srcObject = stream;
+                await videoRef.current!.play();
                 setStatus("ready");
             } catch (err) {
-                err.name === "NotAllowedError" ? setStatus("denied") : setStatus("error");
+                err instanceof DOMException && err.name === "NotAllowedError" ? setStatus("denied") : setStatus("error");
             }
         }
 
