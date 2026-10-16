@@ -19,7 +19,8 @@ export function CameraFeed() {
                 await videoRef.current!.play();
                 setStatus("ready");
             } catch (err) {
-                err instanceof DOMException && err.name === "NotAllowedError" ? setStatus("denied") : setStatus("error");
+                setStatus(err instanceof DOMException && err.name === "NotAllowedError" ? "denied" : "error");
+
             }
         }
 
