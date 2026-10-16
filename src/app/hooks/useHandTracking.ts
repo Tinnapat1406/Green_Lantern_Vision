@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
-import type { GestureRecognizer } from "@mediapipe/tasks-vision";
+import { useEffect, useRef, useState, type RefObject } from "react";
+import type { GestureRecognizer, NormalizedLandmark } from "@mediapipe/tasks-vision";
 
 
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.1/wasm";
@@ -14,6 +14,7 @@ export function useHandTracking(
     enabled: boolean
 ) {
     const [gesture, setGesture] = useState<string | null>(null);
+    const handRef = useRef<NormalizedLandmark[] | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -28,6 +29,7 @@ export function useHandTracking(
         if(recognizer && video && !cancelled){
             const result = recognizer.recognizeForVideo(video, performance.now());   // ← เพิ่มบรรทัดนี้กลับมา
             const name = result.gestures[0]?.[0]?.categoryName ?? null;
+            handRef.current = result.landmarks[0] ?? null;
 
             if (name !== lastGesture) {
                 lastGesture = name;
@@ -62,6 +64,6 @@ export function useHandTracking(
     };
  },[enabled, videoRef]);
 
-  return gesture;
+  return {gesture, handRef};
 
 }
