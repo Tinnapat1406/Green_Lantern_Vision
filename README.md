@@ -1,6 +1,9 @@
 # Green Lantern Vision 
 
-> *"In brightest day, in blackest night, no evil shall escape my sight..."*
+> *"In brightest day, in blackest night,
+No evil shall escape my sight.
+Let those who worship evil's might,
+Beware my power, Green Lantern's light!"*
 
 A browser-based Green Lantern power ring. Hold your hand up to the webcam, make a gesture, and a glowing green construct is summoned from your ring finger — all running in real time, entirely in the browser.
 
