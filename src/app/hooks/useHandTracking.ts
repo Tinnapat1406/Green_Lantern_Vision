@@ -27,6 +27,7 @@ export function useHandTracking(
     let candidate: string | null = null;   
     let candidateSince = 0;                 
     const HOLD_MS = 150;
+    const SMOOTH = 0.5; 
 
     function loop(){
         const video = videoRef.current;
@@ -46,7 +47,20 @@ export function useHandTracking(
                     setGesture(candidate);
                 }
             }
-            handRef.current = result.landmarks[0] ?? null;
+            const next = result.landmarks[0];
+            const prev = handRef.current;
+
+            if (!next) {
+                handRef.current = null;
+            } else if (!prev) {
+                handRef.current = next;           
+            } else {
+                handRef.current = next.map((point, index) => ({
+                    ...point,
+                    x: prev[index].x + (point.x - prev[index].x) * SMOOTH,
+                    y: prev[index].y + (point.y - prev[index].y) * SMOOTH,
+                }));
+            }
 
         }
         frameId = requestAnimationFrame(loop); 

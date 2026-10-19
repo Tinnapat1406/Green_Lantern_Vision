@@ -28,7 +28,7 @@ function makeGlowTexture() {
 export function PowerOrb({ handRef }: { handRef: HandRef }) {
     const groupRef = useRef<Group>(null);
     const summon = useSummon();  
-    const glow = useMemo(makeGlowTexture, []);
+    const glow = useMemo(() => makeGlowTexture(), []);
 
     useFrame((state) => {
         const group = groupRef.current;
