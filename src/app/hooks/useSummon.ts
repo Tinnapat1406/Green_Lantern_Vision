@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
 export function useSummon(speed = 6) {
+    
   const progress = useRef(0);
 
   useFrame((_, delta) => {
