@@ -24,19 +24,29 @@ export function useHandTracking(
     let lastGesture: string | null = null;
     let cancelled = false;
     let lastVideoTime = -1;
+    let candidate: string | null = null;   
+    let candidateSince = 0;                 
+    const HOLD_MS = 150;
 
     function loop(){
         const video = videoRef.current;
         if (recognizer && video && !cancelled && video.readyState >= 2 && video.currentTime !== lastVideoTime) {
                 lastVideoTime = video.currentTime;
             const result = recognizer.recognizeForVideo(video, performance.now());
-            const name = result.gestures[0]?.[0]?.categoryName ?? null;
-            handRef.current = result.landmarks[0] ?? null;
-
-            if (name !== lastGesture) {
-                lastGesture = name;
-                setGesture(name);
+            const now = performance.now();
+            const top = result.gestures[0]?.[0];
+            const name = top && top.score > 0.6 ? top.categoryName : null;  
+            
+            if (name !== candidate) {
+                candidate = name;
+                candidateSince = now;
+            } else if (candidate && now - candidateSince > HOLD_MS) {
+                if (candidate !== lastGesture) {
+                    lastGesture = candidate;
+                    setGesture(candidate);
+                }
             }
+            handRef.current = result.landmarks[0] ?? null;
 
         }
         frameId = requestAnimationFrame(loop); 

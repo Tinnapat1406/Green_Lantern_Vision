@@ -4,9 +4,11 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { Group } from "three";
 import { ringAnchor, type HandRef } from "@/app/lib/anchor";
+import { useSummon, easeOut } from "@/app/hooks/useSummon";
 
 export function Shield({ handRef }: { handRef: HandRef }) {
     const groupRef = useRef<Group>(null);
+    const summon = useSummon();    
 
     useFrame((state) => {
         const group = groupRef.current;
@@ -19,6 +21,7 @@ export function Shield({ handRef }: { handRef: HandRef }) {
         group.visible = true;
         const pos = ringAnchor(landmarks, state.size);
         group.position.set(pos.x, pos.y, 0);
+        group.scale.setScalar(easeOut(summon.current))
     });
 
     return(

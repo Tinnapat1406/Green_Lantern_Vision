@@ -5,11 +5,14 @@ import { useFrame } from "@react-three/fiber";
 import type { Mesh } from "three";
 import { ringAnchor, type HandRef } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
+import { useSummon , easeOut } from "@/app/hooks/useSummon";
+
 
 const LENGTH = 2000; 
 
 export function Beam({ handRef }: { handRef: HandRef }) {
     const meshRef = useRef<Mesh>(null);
+    const summon = useSummon();  
 
     useFrame((state) => {
         const mesh = meshRef.current;
@@ -31,7 +34,14 @@ export function Beam({ handRef }: { handRef: HandRef }) {
             0,
         );
         mesh.rotation.z = angle - Math.PI / 2;
-        
+
+        const length = LENGTH * easeOut(summon.current); 
+        mesh.scale.setScalar(easeOut(summon.current));
+        mesh.position.set(
+            start.x + Math.cos(angle) * length / 2, 
+            start.y + Math.sin(angle) * length / 2, 
+            0,
+        );
     });
     return (
     <mesh ref={meshRef}>
