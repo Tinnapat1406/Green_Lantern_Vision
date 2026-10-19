@@ -42,8 +42,8 @@ export function Beam({ handRef }: { handRef: HandRef }) {
     });
     return (
     <mesh ref={meshRef}>
-      <cylinderGeometry args={[10, 10, LENGTH, 16]} />
-      <meshBasicMaterial color="#39ff14" transparent opacity={0.8} />
+      <cylinderGeometry args={[40, 40, LENGTH, 16]} />
+      <meshBasicMaterial color="#82e670" transparent opacity={0.8} />
     </mesh>
   );
 }

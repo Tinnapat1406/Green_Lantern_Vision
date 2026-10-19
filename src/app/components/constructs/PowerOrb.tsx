@@ -43,7 +43,7 @@ export function PowerOrb({ handRef }: { handRef: HandRef }) {
         group.position.set(pos.x, pos.y, 0);
 
         const t = state.clock.getElapsedTime();
-        const pulse = 1 + Math.sin(t * 8) * 0.15;
+        const pulse = 1 + Math.sin(t * 8) * 0.50;
         group.scale.setScalar(pulse * easeOut(summon.current));
 
 
@@ -51,7 +51,7 @@ export function PowerOrb({ handRef }: { handRef: HandRef }) {
 
     return(
         <group ref={groupRef}>
-            <sprite scale={[220, 220, 1]}>
+            <sprite scale={[450, 450, 1]}>
                 <spriteMaterial map={glow} blending={AdditiveBlending} transparent depthWrite={false} />
             </sprite>
         </group>
