@@ -6,7 +6,7 @@ import type { Mesh } from "three";
 import { ringAnchor, type HandRef } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
-import { group } from "console";
+
 
 
 const LENGTH = 2000; 
