@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Green Lantern Vision 💚
 
-## Getting Started
+> *"In brightest day, in blackest night, no evil shall escape my sight..."*
 
-First, run the development server:
+A browser-based Green Lantern power ring. Hold your hand up to the webcam, make a gesture, and a glowing green construct is summoned from your ring finger — all running in real time, entirely in the browser.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+No backend, no Python, no install: the hand-tracking model runs client-side with MediaPipe, and the constructs are rendered with Three.js on top of the live camera feed.
+
+## Gestures
+
+| Gesture | Construct | Effect |
+|---|---|---|
+| ✋ Open palm | **Shield** | A translucent round shield that grows out of the ring |
+| ☝️ Pointing up | **Beam** | An energy beam that shoots out along the direction of your index finger |
+| ✊ Closed fist | **Power Orb** | A pulsing orb of light with an additive glow |
+
+## How it works
+
+```
+Webcam ──► <video> ──► MediaPipe GestureRecognizer (WASM + GPU, ~30 fps)
+                              │
+               ┌──────────────┴──────────────┐
+               ▼                             ▼
+     21 hand landmarks                 gesture name
+     (useRef, every frame)       (useState, only when it changes)
+               │                             │
+               ▼                             ▼
+     React Three Fiber scene ◄──── which construct to render
+     useFrame() moves meshes
+     without re-rendering React
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A few details that make it feel smooth:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Landmark smoothing.** Raw landmarks jitter a little every frame, so each point is eased toward its new position (a simple lerp) before anything reads it.
+- **Gesture debouncing.** A new gesture must be held for 150 ms with more than 60% confidence before it counts. This stops constructs from flickering when the model briefly misreads a frame.
+- **Summon animation.** Every construct scales in from the ring with an ease-out curve. The animation is driven by frame `delta`, so it runs at the same speed on 60 Hz and 120 Hz displays.
+- **State vs. ref.** Hand position changes ~60 times a second and lives in a ref read inside `useFrame`. Only the gesture name is React state, so React re-renders a handful of times instead of every frame.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech stack
 
-## Learn More
+- [Next.js 16](https://nextjs.org) (App Router) + React 19 + TypeScript
+- [MediaPipe Tasks Vision](https://ai.google.dev/edge/mediapipe/solutions/vision/gesture_recognizer) for hand landmarks and gesture recognition
+- [Three.js](https://threejs.org) via [React Three Fiber](https://r3f.docs.pmnd.rs) for the constructs
+- Tailwind CSS v4
 
-To learn more about Next.js, take a look at the following resources:
+## Getting started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Requires Node.js 20+ and a webcam.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+npm run dev
+```
 
-## Deploy on Vercel
+Open [http://localhost:3000](http://localhost:3000) and allow camera access. The model (~8 MB) downloads on first load and takes a second or two to initialize.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/app/
+├─ page.tsx                     Entry page
+├─ components/
+│  ├─ CameraFeed.tsx            Opens the webcam and wires everything together
+│  ├─ RingScene.tsx             Three.js overlay: ring markers + active construct
+│  └─ constructs/
+│     ├─ Shield.tsx
+│     ├─ Beam.tsx
+│     └─ PowerOrb.tsx
+├─ hooks/
+│  ├─ useHandTracking.ts        MediaPipe loop, smoothing, gesture debouncing
+│  └─ useSummon.ts              0 → 1 summon progress + easing
+└─ lib/                         Pure functions, no React
+   ├─ fingers.ts                Landmark indices and ring position per finger
+   ├─ coords.ts                 MediaPipe (0–1) → scene pixel coordinates
+   ├─ anchor.ts                 Where constructs attach to the hand
+   └─ constructs.ts             Gesture → construct mapping
+```
+
+## Roadmap
+
+- [ ] **Detect a real green ring.** Sample pixel colors around each finger's ring position so you can wear a physical ring on any finger. Constructs only appear when the ring is worn.
+- [ ] Fix landmark alignment when the video is cropped by `object-cover` on wide screens
+- [ ] Scale constructs with hand distance from the camera
+- [ ] More constructs (hammer, wall, chain)
+- [ ] Deploy a live demo
+
+## Why this project
+
+I built it to learn React properly: components, props, custom hooks, and when to use state versus refs. I also wanted to see how far real-time computer vision can go in the browser alone. It's also a little bit because Green Lantern is the best.
