@@ -1,4 +1,4 @@
-# Green Lantern Vision 💚
+# Green Lantern Vision 
 
 > *"In brightest day, in blackest night, no evil shall escape my sight..."*
 
