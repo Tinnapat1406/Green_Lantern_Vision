@@ -15,7 +15,7 @@ export function Shield({ handRef }: { handRef: HandRef }) {
         const landmarks = handRef.current;
 
         if (!group || !landmarks) {
-            group?.visible && (group.visible = false);
+           if (group) group.visible = false;
             return;
         }
         group.visible = true;

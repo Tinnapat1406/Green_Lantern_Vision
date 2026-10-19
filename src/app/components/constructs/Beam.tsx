@@ -20,7 +20,7 @@ export function Beam({ handRef }: { handRef: HandRef }) {
         const landmarks = handRef.current;
 
         if (!mesh || !landmarks) {
-            if (group) group.visible = false;   
+            if (mesh) mesh.visible = false;  
             return;
         }
         mesh.visible = true;
@@ -29,11 +29,7 @@ export function Beam({ handRef }: { handRef: HandRef }) {
 
         const angle = Math.atan2(tip.y - start.y, tip.x - start.x);
 
-        mesh?.position.set(
-            start.x + Math.cos(angle) * LENGTH / 2, 
-            start.y + Math.sin(angle) * LENGTH / 2, 
-            0,
-        );
+        
         mesh.rotation.z = angle - Math.PI / 2;
 
         const length = LENGTH * easeOut(summon.current); 
