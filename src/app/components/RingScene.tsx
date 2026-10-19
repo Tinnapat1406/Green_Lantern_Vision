@@ -6,6 +6,11 @@ import type { Mesh } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { FINGERS, ringPosition, type Finger } from "@/app/lib/fingers";
 import { toScene } from "@/app/lib/coords";
+import { gestureToConstruct } from "@/app/lib/constructs";
+import { Shield } from "./constructs/Shield";
+import { Beam } from "./constructs/Beam";
+import { PowerOrb } from "./constructs/PowerOrb";
+
 
 type Props = {
   handRef: RefObject<NormalizedLandmark[] | null>;
@@ -43,13 +48,20 @@ function RingMarker({ handRef, finger }: MarkerProps) {
   );
 }
 
-export function RingScene({ handRef }: Props) {
+type SceneProps = Props & { gesture: string | null };
+
+export function RingScene({ handRef, gesture }: SceneProps) {
+  const construct = gestureToConstruct(gesture);
   return (
     <div className="pointer-events-none absolute inset-0">
       <Canvas orthographic camera={{ position: [0, 0, 100], zoom: 1 }}>
         {FINGERS.map((finger) => (
           <RingMarker key={finger.name} handRef={handRef} finger={finger} />
         ))}
+            {construct === "shield" && <Shield handRef={handRef} />}
+            {construct === "beam" && <Beam handRef={handRef} />}
+            {construct === "orb" && <PowerOrb handRef={handRef} />}
+
       </Canvas>
     </div>
   );

@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import type { Group } from "three";
 import { ringAnchor, type HandRef } from "@/app/lib/anchor";
 
-export function Shield({ handRef }: { handRef: HandRef }) {
+export function PowerOrb({ handRef }: { handRef: HandRef }) {
     const groupRef = useRef<Group>(null);
 
     useFrame((state) => {
@@ -13,7 +13,7 @@ export function Shield({ handRef }: { handRef: HandRef }) {
         const landmarks = handRef.current;
 
         if (!group || !landmarks) {
-            group?.visible && (group.visible = false);
+            if (group) group.visible = false;   
             return;
         }
         group.visible = true;
