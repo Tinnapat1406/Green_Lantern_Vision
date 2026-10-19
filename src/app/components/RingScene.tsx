@@ -38,7 +38,7 @@ function RingMarker({ handRef, finger }: MarkerProps) {
    return (
     <mesh ref={meshRef}>
       <torusGeometry args={[14, 3, 12, 32]} />   {/* ห่วงรัศมี 14px หนา 3px */}
-      <meshBasicMaterial color="#39ff14" wireframe />
+      <meshBasicMaterial color="#298d17" wireframe />
     </mesh>
   );
 }

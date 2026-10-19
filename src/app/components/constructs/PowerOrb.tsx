@@ -1,0 +1,40 @@
+"use client";
+
+import { useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import type { Group } from "three";
+import { ringAnchor, type HandRef } from "@/app/lib/anchor";
+
+export function Shield({ handRef }: { handRef: HandRef }) {
+    const groupRef = useRef<Group>(null);
+
+    useFrame((state) => {
+        const group = groupRef.current;
+        const landmarks = handRef.current;
+
+        if (!group || !landmarks) {
+            group?.visible && (group.visible = false);
+            return;
+        }
+        group.visible = true;
+        const pos = ringAnchor(landmarks, state.size);
+        group.position.set(pos.x, pos.y, 0);
+
+        const t = state.clock.getElapsedTime();
+        group.scale.setScalar(1 + Math.sin(t * 8) * 0.15)
+
+    });
+
+    return(
+        <group ref={groupRef}>
+            <mesh>
+                <sphereGeometry args={[45, 32, 32]} />
+                <meshBasicMaterial color="#b6ff9e" />                     {/* แกนกลางสว่าง */}
+            </mesh>
+            <mesh>
+                <sphereGeometry args={[70, 32, 32]} />
+                <meshBasicMaterial color="#39ff14" transparent opacity={0.3} />   {/* แสงเรืองรอบนอก */}
+            </mesh>
+        </group>
+    );
+}
