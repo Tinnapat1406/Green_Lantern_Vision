@@ -7,7 +7,8 @@ export function useSummon(speed = 6) {
   const progress = useRef(0);
 
   useFrame((_, delta) => {
-    progress.current += Math.min(1,delta * speed);
+    progress.current = Math.min(1, progress.current + delta * speed);  
+
   });
 
   return progress

@@ -40,7 +40,7 @@ export function useHandTracking(
             if (name !== candidate) {
                 candidate = name;
                 candidateSince = now;
-            } else if (candidate && now - candidateSince > HOLD_MS) {
+            } else if (now - candidateSince > HOLD_MS) {
                 if (candidate !== lastGesture) {
                     lastGesture = candidate;
                     setGesture(candidate);

@@ -6,6 +6,7 @@ import type { Mesh } from "three";
 import { ringAnchor, type HandRef } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
+import { group } from "console";
 
 
 const LENGTH = 2000; 
@@ -19,7 +20,7 @@ export function Beam({ handRef }: { handRef: HandRef }) {
         const landmarks = handRef.current;
 
         if (!mesh || !landmarks) {
-            mesh?.visible && (mesh.visible = false);
+            if (group) group.visible = false;   
             return;
         }
         mesh.visible = true;
