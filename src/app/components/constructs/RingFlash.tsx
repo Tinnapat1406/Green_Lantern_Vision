@@ -26,7 +26,7 @@ export function RingFlash({ handRef }: { handRef: HandRef }) {
             const pos = ringAnchor(landmarks, state.size);
             sprite.position.set(pos.x, pos.y, 1);
 
-            sprite.scale.setScalar(1 + t * 0.5);
+            sprite.scale.setScalar(40 + t * 260); 
             sprite.material.opacity = 1 - t;
             
         

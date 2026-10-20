@@ -60,9 +60,7 @@ export function RingScene({ handRef, gesture }: SceneProps) {
           <RingMarker key={finger.name} handRef={handRef} finger={finger} />
         ))}
             {construct === "shield" && <Shield handRef={handRef} />}
-            {construct !== "none" && <RingFlash key={construct} handRef={handRef} />}
             {construct === "beam" && <Beam handRef={handRef} />}
-            {construct !== "none" && <RingFlash key={construct} handRef={handRef} />}
             {construct === "orb" && <PowerOrb handRef={handRef} />}
             {construct !== "none" && <RingFlash key={construct} handRef={handRef} />}
       </Canvas>
