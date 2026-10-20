@@ -1,23 +1,27 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef,useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { Mesh } from "three";
 import { ringAnchor, type HandRef } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
-
-
+import { makeGlowTexture } from "@/app/lib/glow";
+import { AdditiveBlending, type Group } from "three";
 
 const LENGTH = 2000; 
 
 export function Beam({ handRef }: { handRef: HandRef }) {
     const meshRef = useRef<Mesh>(null);
     const summon = useSummon();  
+    const glow = useMemo(() => makeGlowTexture(), []);
+    const groupRef = useRef<Group>(null);
 
     useFrame((state) => {
         const mesh = meshRef.current;
         const landmarks = handRef.current;
+        
+        
 
         if (!mesh || !landmarks) {
             if (mesh) mesh.visible = false;  
@@ -41,9 +45,19 @@ export function Beam({ handRef }: { handRef: HandRef }) {
         );
     });
     return (
-    <mesh ref={meshRef}>
-      <cylinderGeometry args={[40, 40, LENGTH, 16]} />
-      <meshBasicMaterial color="#82e670" transparent opacity={0.8} />
-    </mesh>
+   <group ref={groupRef}>
+  
+        <mesh>
+            <cylinderGeometry args={[8, 8, LENGTH, 16]} />
+            <meshBasicMaterial color="#e8ffe0" blending={AdditiveBlending} />
+        </mesh>
+  
+        <mesh>
+            <cylinderGeometry args={[30, 30, LENGTH, 16]} />
+            <meshBasicMaterial color="#39ff14" transparent opacity={0.25}
+            blending={AdditiveBlending} depthWrite={false} />
+        </mesh>
+</group>
+
   );
 }

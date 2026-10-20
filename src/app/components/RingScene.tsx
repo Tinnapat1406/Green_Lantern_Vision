@@ -10,6 +10,7 @@ import { gestureToConstruct } from "@/app/lib/constructs";
 import { Shield } from "./constructs/Shield";
 import { Beam } from "./constructs/Beam";
 import { PowerOrb } from "./constructs/PowerOrb";
+import { RingFlash } from "./constructs/RingFlash";
 
 
 type Props = {
@@ -59,9 +60,11 @@ export function RingScene({ handRef, gesture }: SceneProps) {
           <RingMarker key={finger.name} handRef={handRef} finger={finger} />
         ))}
             {construct === "shield" && <Shield handRef={handRef} />}
+            {construct !== "none" && <RingFlash key={construct} handRef={handRef} />}
             {construct === "beam" && <Beam handRef={handRef} />}
+            {construct !== "none" && <RingFlash key={construct} handRef={handRef} />}
             {construct === "orb" && <PowerOrb handRef={handRef} />}
-
+            {construct !== "none" && <RingFlash key={construct} handRef={handRef} />}
       </Canvas>
     </div>
   );
