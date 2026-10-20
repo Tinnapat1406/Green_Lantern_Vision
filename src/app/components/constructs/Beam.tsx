@@ -8,7 +8,6 @@ import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
 import { makeGlowTexture } from "@/app/lib/glow";
 import { AdditiveBlending, type Group } from "three";
-import { group } from "console";
 
 const LENGTH = 2000; 
 

@@ -8,17 +8,18 @@ export function CameraFeed() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [status, setStatus] = useState("starting");
     const { gesture, handRef } = useHandTracking(videoRef, status === "ready");
+    const [aspect, setAspect] = useState(16 / 9);
 
-     
     useEffect(() => {
         let stream: MediaStream | null = null;
-
         async function start() {
-
             try { 
-                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 1280, height: 720 },
+                });
                 videoRef.current!.srcObject = stream;
                 await videoRef.current!.play();
+                setAspect(videoRef.current!.videoWidth / videoRef.current!.videoHeight);
                 setStatus("ready");
             } catch (err) {
                 setStatus(err instanceof DOMException && err.name === "NotAllowedError" ? "denied" : "error");
@@ -34,17 +35,22 @@ export function CameraFeed() {
     }, []);
 
     return(
-         <div className="relative h-screen w-screen bg-black">
+         <div className="flex h-screen w-screen items-center justify-center bg-black">
+            <div
+            className="relative"
+            style={{ aspectRatio: aspect, width: `min(100vw, ${aspect * 100}vh)` }}
+            >
             <video
                 ref={videoRef}
                 playsInline
                 muted
-                className="h-full w-full object-cover -scale-x-100"
+                className="h-full w-full -scale-x-100"   
             />
-         <RingScene handRef={handRef} gesture={gesture} /> 
+            <RingScene handRef={handRef} gesture={gesture} />
             <p className="absolute top-4 left-4 font-mono text-green-400">
                 {status} · {gesture ?? "no hand"}
             </p>
+            </div>
         </div>
     );
 }

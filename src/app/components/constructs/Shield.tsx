@@ -40,7 +40,7 @@ export function Shield({ handRef }: { handRef: HandRef }) {
     <group ref={groupRef}>
       <mesh>
         <circleGeometry args={[120, 64]} />
-        <meshBasicMaterial ref={fillRef} color="#39ff14" transparent opacity={0.2}
+        <meshBasicMaterial ref={fillRef} color="#3b842e" transparent opacity={0.2}
           blending={AdditiveBlending} depthWrite={false} />
       </mesh>
       <mesh>
