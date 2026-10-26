@@ -3,13 +3,13 @@
 import { useRef,useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { type Group , AdditiveBlending} from "three";
-import { ringAnchor, type HandRef } from "@/app/lib/anchor";
+import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
 import { makeGlowTexture } from "@/app/lib/glow";
 
 
 
-export function PowerOrb({ handRef }: { handRef: HandRef }) {
+export function PowerOrb({ handRef, finger }: ConstructProps) {
     const groupRef = useRef<Group>(null);
     const summon = useSummon();  
     const glow = useMemo(() => makeGlowTexture(), []);
@@ -23,7 +23,7 @@ export function PowerOrb({ handRef }: { handRef: HandRef }) {
             return;
         }
         group.visible = true;
-        const pos = ringAnchor(landmarks, state.size);
+        const pos = ringAnchor(landmarks,finger,state.size);
         group.position.set(pos.x, pos.y, 0);
 
         const t = state.clock.getElapsedTime();

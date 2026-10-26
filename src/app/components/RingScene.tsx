@@ -4,7 +4,7 @@ import { useRef, type RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import type { Mesh } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import { FINGERS, ringPosition, type Finger } from "@/app/lib/fingers";
+import { ringPosition, type Finger } from "@/app/lib/fingers";
 import { toScene } from "@/app/lib/coords";
 import { gestureToConstruct } from "@/app/lib/constructs";
 import { Shield } from "./constructs/Shield";
@@ -49,20 +49,27 @@ function RingMarker({ handRef, finger }: MarkerProps) {
   );
 }
 
-type SceneProps = Props & { gesture: string | null };
+type SceneProps = Props & {
+  gesture: string | null;
+  ringFinger: Finger | null;
+};
 
-export function RingScene({ handRef, gesture }: SceneProps) {
+export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
   const construct = gestureToConstruct(gesture);
+  
   return (
     <div className="pointer-events-none absolute inset-0">
       <Canvas orthographic camera={{ position: [0, 0, 100], zoom: 1 }}>
-        {FINGERS.map((finger) => (
-          <RingMarker key={finger.name} handRef={handRef} finger={finger} />
-        ))}
-            {construct === "shield" && <Shield handRef={handRef} />}
-            {construct === "beam" && <Beam handRef={handRef} />}
-            {construct === "orb" && <PowerOrb handRef={handRef} />}
-            {construct !== "none" && <RingFlash key={construct} handRef={handRef} />}
+        
+        {ringFinger && (
+          <>
+            <RingMarker handRef={handRef} finger={ringFinger} />
+            {construct === "shield" && <Shield handRef={handRef} finger={ringFinger} />}
+            {construct === "beam" && <Beam handRef={handRef} finger={ringFinger} />}
+            {construct === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} />}
+            {construct !== "none" && <RingFlash key={construct} handRef={handRef} finger={ringFinger} />}
+          </>
+        )}
       </Canvas>
     </div>
   );

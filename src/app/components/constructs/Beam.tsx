@@ -3,15 +3,16 @@
 import { useRef,useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { Mesh } from "three";
-import { ringAnchor, type HandRef } from "@/app/lib/anchor";
+import { ringAnchor, type HandRef,type ConstructProps } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
 import { makeGlowTexture } from "@/app/lib/glow";
 import { AdditiveBlending, type Group } from "three";
 
+
 const LENGTH = 2000; 
 
-export function Beam({ handRef }: { handRef: HandRef }) {
+export function Beam({ handRef, finger }: ConstructProps) {
     
     const summon = useSummon();  
     const glow = useMemo(() => makeGlowTexture(), []);
@@ -22,14 +23,16 @@ export function Beam({ handRef }: { handRef: HandRef }) {
         const landmarks = handRef.current;
         
         
+        
 
         if (!group || !landmarks) {
             if (group) group.visible = false;  
             return;
         }
         group.visible = true;
-        const start = ringAnchor(landmarks, state.size);   
-        const tip = toScene(landmarks[8], state.size);  
+        const start = ringAnchor(landmarks,finger,state.size);   
+        const tip = toScene(landmarks[8], state.size); 
+         
 
         const angle = Math.atan2(tip.y - start.y, tip.x - start.x);
 

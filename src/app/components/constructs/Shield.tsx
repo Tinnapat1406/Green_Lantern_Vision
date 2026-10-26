@@ -3,13 +3,13 @@
 import { useRef,useMemo} from "react";
 import { useFrame } from "@react-three/fiber";
 import type { Group } from "three";
-import { ringAnchor, type HandRef } from "@/app/lib/anchor";
+import { ConstructProps, ringAnchor} from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
 import { makeGlowTexture } from "@/app/lib/glow";
 import { AdditiveBlending, type MeshBasicMaterial } from "three";
 
 
-export function Shield({ handRef }: { handRef: HandRef }) {
+export function Shield({ handRef,finger }: ConstructProps) {
     const groupRef = useRef<Group>(null);
     const summon = useSummon();   
     const fillRef = useRef<MeshBasicMaterial>(null);
@@ -24,7 +24,7 @@ export function Shield({ handRef }: { handRef: HandRef }) {
             return;
         }
         group.visible = true;
-        const pos = ringAnchor(landmarks, state.size);
+        const pos = ringAnchor(landmarks,finger,state.size);
         group.position.set(pos.x, pos.y, 0);
         group.scale.setScalar(easeOut(summon.current))
 

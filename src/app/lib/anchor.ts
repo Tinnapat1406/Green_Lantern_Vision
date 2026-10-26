@@ -1,14 +1,19 @@
 import type { RefObject } from "react";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import { FINGERS, ringPosition } from "./fingers";
+import { type Finger, ringPosition } from "./fingers";
 import { toScene } from "./coords";
 
 export type HandRef = RefObject<NormalizedLandmark[] | null>;
-const RING_FINGER = FINGERS[2];
+
+export type ConstructProps ={
+    handRef: HandRef;
+    finger: Finger;
+}
 
 export function ringAnchor(
     landmarks: NormalizedLandmark[],
+    finger: Finger,
     size: { width: number; height: number },
 ){
-    return toScene(ringPosition(landmarks, RING_FINGER), size);
+    return toScene(ringPosition(landmarks, finger), size);
 }

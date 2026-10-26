@@ -48,7 +48,7 @@ export function CameraFeed() {
                 muted
                 className="h-full w-full -scale-x-100"   
             />
-            <RingScene handRef={handRef} gesture={gesture} />
+            <RingScene handRef={handRef} gesture={gesture} ringFinger={ringFinger} />
             <p className="absolute top-4 left-4 font-mono text-green-400">
                 {status} · {gesture ?? "no hand"} · ring: {ringFinger?.name ?? "none"}
             </p>
