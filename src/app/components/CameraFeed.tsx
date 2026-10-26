@@ -2,13 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useHandTracking } from "../hooks/useHandTracking";
-import { RingScene } from "./RingScene"; 
+import { useRingDetection } from "../hooks/useRingDetection";
+import { RingScene } from "./RingScene";
 
 export function CameraFeed() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [status, setStatus] = useState("starting");
-    const { gesture, handRef } = useHandTracking(videoRef, status === "ready");
     const [aspect, setAspect] = useState(16 / 9);
+    const { gesture, handRef } = useHandTracking(videoRef, status === "ready");
+    const ringFinger = useRingDetection(videoRef, handRef, status === "ready");
 
     useEffect(() => {
         let stream: MediaStream | null = null;
@@ -48,7 +50,7 @@ export function CameraFeed() {
             />
             <RingScene handRef={handRef} gesture={gesture} />
             <p className="absolute top-4 left-4 font-mono text-green-400">
-                {status} · {gesture ?? "no hand"}
+                {status} · {gesture ?? "no hand"} · ring: {ringFinger?.name ?? "none"}
             </p>
             </div>
         </div>
