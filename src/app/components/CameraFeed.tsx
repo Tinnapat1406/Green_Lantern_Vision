@@ -4,13 +4,21 @@ import { useEffect, useRef, useState } from "react";
 import { useHandTracking } from "../hooks/useHandTracking";
 import { useRingDetection } from "../hooks/useRingDetection";
 import { RingScene } from "./RingScene";
+import { FINGERS } from "@/app/lib/fingers";
+
+
 
 export function CameraFeed() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [status, setStatus] = useState("starting");
     const [aspect, setAspect] = useState(16 / 9);
     const { gesture, handRef } = useHandTracking(videoRef, status === "ready");
-    const ringFinger = useRingDetection(videoRef, handRef, status === "ready");
+    const [manualRing, setManualRing] = useState(false);
+    const  detectFinger = useRingDetection(videoRef, handRef, status === "ready" && !manualRing);
+    const ringFinger = manualRing ? FINGERS[2] : detectFinger
+
+
+
 
     useEffect(() => {
         let stream: MediaStream | null = null;
@@ -42,6 +50,7 @@ export function CameraFeed() {
             className="relative"
             style={{ aspectRatio: aspect, width: `min(100vw, ${aspect * 100}vh)` }}
             >
+           
             <video
                 ref={videoRef}
                 playsInline
@@ -52,6 +61,15 @@ export function CameraFeed() {
             <p className="absolute top-4 left-4 font-mono text-green-400">
                 {status} · {gesture ?? "no hand"} · ring: {ringFinger?.name ?? "none"}
             </p>
+
+            <button onClick ={() => setManualRing((prev)=> !prev)}
+                className={`absolute top-4 right-4 rounded-full border px-4 py-2 font-mono text-sm transition ${
+                manualRing
+                ? "border-green-400 bg-green-400/20 text-green-300 shadow-[0_0_12px_#39ff14]"
+                : "border-white/30 bg-black/50 text-white/70"
+            }`}>
+                {manualRing ? "Ring : On" :"Ring :Auto"}
+            </button>
             </div>
         </div>
     );
