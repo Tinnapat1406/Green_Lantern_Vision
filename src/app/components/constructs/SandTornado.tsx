@@ -60,14 +60,13 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
     const p = particlesRef.current;
     const grow = easeOut(summon.current);
 
-    const pos = landmarks[9]
-    toScene(pos,state.size);
+    const pos = toScene(landmarks[9],state.size);
     points.position.set(pos.x,pos.y,0);
 
     for (let i = 0; i < COUNT; i++) {
        p.angle[i] += p.speed[i] * delta
        p.height[i] += delta * 0.4
-      //         ถ้าเกิน 1 ให้ลบ 1 (วนกลับลงไปที่ฐาน)
+
       if(p.height[i] > 1){
         p.height[i] -= 1
       }
@@ -83,7 +82,7 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
   return (
     <points ref={pointsRef}>
       <bufferGeometry />
-      <pointsMaterial color="#d9b46a" size={3} sizeAttenuation={false} transparent opacity={0.85} depthWrite={false} />
+      <pointsMaterial color="#447e5c" size={3} sizeAttenuation={false} transparent opacity={0.85} depthWrite={false} />
     </points>
   );
 

@@ -17,9 +17,6 @@ export function CameraFeed() {
     const  detectFinger = useRingDetection(videoRef, handRef, status === "ready" && !manualRing);
     const ringFinger = manualRing ? FINGERS[2] : detectFinger
 
-
-
-
     useEffect(() => {
         let stream: MediaStream | null = null;
         async function start() {
