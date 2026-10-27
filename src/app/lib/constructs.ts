@@ -1,8 +1,9 @@
-export type ConstructType = "shield" | "beam" | "orb" | "none";
+export type ConstructType = "shield" | "beam" | "orb" | "sand"|"none";
 const GESTURE_TO_CONSTRUCT: Record<string, ConstructType> = {
     Open_Palm: "shield",
     Pointing_Up: "beam",
     Closed_Fist: "orb",
+    Palm_Up: "sand",
     None: "none",
 };
 

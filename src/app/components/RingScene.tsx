@@ -11,6 +11,7 @@ import { Shield } from "./constructs/Shield";
 import { Beam } from "./constructs/Beam";
 import { PowerOrb } from "./constructs/PowerOrb";
 import { RingFlash } from "./constructs/RingFlash";
+import { SandTornado } from "./constructs/SandTornado";
 
 
 type Props = {
@@ -67,6 +68,7 @@ export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
             {construct === "shield" && <Shield handRef={handRef} finger={ringFinger} />}
             {construct === "beam" && <Beam handRef={handRef} finger={ringFinger} />}
             {construct === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} />}
+            {construct === "sand" && <SandTornado handRef={handRef} />}
             {construct !== "none" && <RingFlash key={construct} handRef={handRef} finger={ringFinger} />}
           </>
         )}
