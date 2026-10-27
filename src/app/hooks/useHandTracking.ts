@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type RefObject } from "react";
+import { isPalmUp } from "@/app/lib/palm";
 import type { GestureRecognizer, NormalizedLandmark } from "@mediapipe/tasks-vision";
 
 
@@ -36,7 +37,9 @@ export function useHandTracking(
             const result = recognizer.recognizeForVideo(video, performance.now());
             const now = performance.now();
             const top = result.gestures[0]?.[0];
-            const name = top && top.score > 0.6 ? top.categoryName : null;  
+            const world = result.worldLandmarks[0];
+            const palmUp = world && isPalmUp(world) && top?.categoryName !== "Closed_Fist";
+            const name = palmUp ? "Palm_Up" : (top && top.score > 0.6 ? top.categoryName : null); 
             
             if (name !== candidate) {
                 candidate = name;
