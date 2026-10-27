@@ -1,12 +1,10 @@
 "use client";
 
-import { useRef,useMemo } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import type { Mesh } from "three";
-import { ringAnchor, type HandRef,type ConstructProps } from "@/app/lib/anchor";
+import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
-import { makeGlowTexture } from "@/app/lib/glow";
 import { AdditiveBlending, type Group } from "three";
 
 
@@ -14,8 +12,7 @@ const LENGTH = 2000;
 
 export function Beam({ handRef, finger }: ConstructProps) {
     
-    const summon = useSummon();  
-    const glow = useMemo(() => makeGlowTexture(), []);
+    const summon = useSummon();
     const groupRef = useRef<Group>(null);
 
     useFrame((state) => {

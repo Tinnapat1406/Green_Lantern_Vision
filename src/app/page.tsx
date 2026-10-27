@@ -1,6 +1,4 @@
-import Image from "next/image";
 import { CameraFeed } from "@/app/components/CameraFeed";
-import { useHandTracking } from "@/app/hooks/useHandTracking";          // บนสุด ใต้ import เดิม
 
 
 export default function Home() {

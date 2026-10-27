@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef,useMemo} from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { Group } from "three";
 import { ConstructProps, ringAnchor} from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
-import { makeGlowTexture } from "@/app/lib/glow";
 import { AdditiveBlending, type MeshBasicMaterial } from "three";
 
 
@@ -13,7 +12,6 @@ export function Shield({ handRef,finger }: ConstructProps) {
     const groupRef = useRef<Group>(null);
     const summon = useSummon();   
     const fillRef = useRef<MeshBasicMaterial>(null);
-    const glow = useMemo(() => makeGlowTexture(), []);
 
     useFrame((state) => {
         const group = groupRef.current;
