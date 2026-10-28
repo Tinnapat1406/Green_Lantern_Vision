@@ -15,7 +15,7 @@ const HEIGHT = 320;
 const BASE_RADIUS = 20;
 const TOP_RADIUS = 110;
 const PALETTE = ["#39ff14", "#b6ff9e", "#298d17", "#447e5c", "#e8ffe0"].map((hex) => new Color(hex));
-const LAG = 4; 
+const LAG = 3; 
 
 type Particles = {
   angle: Float32Array;     

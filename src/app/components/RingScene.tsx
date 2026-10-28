@@ -12,6 +12,7 @@ import { Beam } from "./constructs/Beam";
 import { PowerOrb } from "./constructs/PowerOrb";
 import { RingFlash } from "./constructs/RingFlash";
 import { SandTornado } from "./constructs/SandTornado";
+import { SparkleBurst } from "./constructs/SparkleBurst";
 
 
 type Props = {
@@ -70,9 +71,12 @@ export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
             {construct === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} />}
             {construct === "sand" && <SandTornado handRef={handRef} />}
             {construct !== "none" && <RingFlash key={construct} handRef={handRef} finger={ringFinger} />}
+            <SparkleBurst key={`burst-${construct}`} handRef={handRef} finger={ringFinger} />
+
           </>
         )}
       </Canvas>
+      
     </div>
   );
 }

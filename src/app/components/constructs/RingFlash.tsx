@@ -7,6 +7,7 @@ import { AdditiveBlending, type Sprite } from "three";
 import { ringAnchor, type ConstructProps} from "@/app/lib/anchor";
 import { makeGlowTexture } from "@/app/lib/glow";
 
+
 const DURATION = 0.4;
 
 export function RingFlash({ handRef,finger }: ConstructProps) {
