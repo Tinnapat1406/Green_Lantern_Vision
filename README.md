@@ -22,9 +22,9 @@ No ring at hand? Click **Ring: Auto** in the top-right corner to switch to **Rin
 | ✋ Open palm | **Shield** | A translucent round shield with a bright rim that shimmers like live energy |
 | ☝️ Pointing up | **Beam** | A two-layer energy beam that shoots out along the direction of your index finger |
 | ✊ Closed fist | **Power Orb** | A pulsing orb of light with an additive glow |
-| 🤲 Palm up | **Sand Tornado** | 1,500 grains of sand spiral up from your palm in a widening funnel |
+| 🤲 Palm up | **Sand Tornado** | 3,000 grains of green energy spiral up from your palm in a widening funnel. The top trails behind your hand when you move, so the tornado bends like a real one |
 
-Every summon starts with a flash of light at the ring.
+Every summon starts with a flash of light at the ring. Every time a construct changes or disappears, a burst of twinkling sparks breaks off the ring and fades away.
 
 MediaPipe has no built-in "palm up" gesture, so the app detects it itself. It takes two vectors across the palm in 3D (wrist → index knuckle, wrist → pinky knuckle). Their cross product is the direction the palm faces, and when that points mostly straight up, the gesture counts as palm up.
 
@@ -53,7 +53,9 @@ A few details that make it feel smooth:
 - **Gesture debouncing.** A new gesture must be held for 150 ms with more than 60% confidence before it counts. This stops constructs from flickering when the model briefly misreads a frame.
 - **Summon animation.** Every construct grows out of the ring with an easing curve, and a flash of light plays at the ring each time. The animation is driven by frame `delta`, so it runs at the same speed on 60 Hz and 120 Hz displays.
 - **Light, not paint.** Constructs use additive blending and a radial-gradient glow texture, so they add light to the camera image instead of painting flat color over it.
-- **Particles without re-renders.** The sand tornado's grain positions live in a single typed array that is updated in place each frame and then flagged for upload to the GPU, so 1,500 grains cost one draw call.
+- **Particles without re-renders.** Particle positions and colors live in typed arrays that are updated in place each frame and then flagged for upload to the GPU, so 3,000 tornado grains cost one draw call.
+- **Soft particles.** Each grain is a round, soft-edged dot rather than a hard square. Every grain also gets its own radius, shade of green and per-vertex alpha. That way the tornado's edges blur naturally, and grains fade in at the base and fade out at the top instead of popping in and out.
+- **Bending with inertia.** A trailing point follows the hand with a delta-based lerp. Each grain is pulled toward it by height² (squared height), so the base stays on your palm while the top swings in a smooth curve.
 - **No cropping.** The video container matches the camera's aspect ratio, so landmark coordinates map 1:1 onto the overlay at any screen size.
 - **State vs. ref.** Hand position changes ~60 times a second and lives in a ref read inside `useFrame`. Only the gesture name and the ring finger are React state, so React re-renders a handful of times instead of every frame.
 
@@ -88,7 +90,8 @@ src/app/
 │     ├─ Beam.tsx
 │     ├─ PowerOrb.tsx
 │     ├─ SandTornado.tsx        Particle whirlwind on an upturned palm
-│     └─ RingFlash.tsx          Flash of light at the ring on every summon
+│     ├─ RingFlash.tsx          Flash of light at the ring on every summon
+│     └─ SparkleBurst.tsx       Twinkling sparks when a construct changes or vanishes
 ├─ hooks/
 │  ├─ useHandTracking.ts        MediaPipe loop, smoothing, gesture debouncing
 │  ├─ useRingDetection.ts       Finds which finger wears the green ring
@@ -99,7 +102,7 @@ src/app/
    ├─ anchor.ts                 Where constructs attach to the hand
    ├─ color.ts                  "Is this pixel green?" and green ratio in an area
    ├─ palm.ts                   Palm-up detection from 3D landmarks
-   ├─ glow.ts                   Radial-gradient glow texture
+   ├─ glow.ts                   Glow and soft-dot textures
    └─ constructs.ts             Gesture → construct mapping
 ```
 
@@ -109,6 +112,7 @@ src/app/
 - [x] Fix landmark alignment when the video is cropped by `object-cover` on wide screens
 - [x] **Sand tornado.** Turn your hand palm-up and a whirlwind of sand spins up from your palm
 - [x] No-ring mode, so visitors can try the demo without a green ring
+- [x] Sparkle burst when switching constructs
 - [ ] Scale constructs with hand distance from the camera
 - [ ] More constructs (hammer, wall, chain)
 - [ ] Deploy a live demo
