@@ -74,9 +74,10 @@ export function SparkleBurst({ handRef, finger }: ConstructProps) {
         s.positions[i * 3 + 1] = s.dy[i] * travel;
         s.positions[i * 3 + 2] = 0;
 
-        s.colors[i * 4 + 3]
-        s.colors[1-t]
-        s.colors[(0.5 + 0.5 * Math.sin(age.current * 40 + i))]
+        s.colors[i * 4 + 3] = 1-t
+        s.colors[i * 4 + 3] = (1 - t) * (0.5 + 0.5 * Math.sin(age.current * 40 + i));
+        
+
 
 
     }
