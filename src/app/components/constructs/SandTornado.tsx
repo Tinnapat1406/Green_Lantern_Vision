@@ -15,7 +15,7 @@ const HEIGHT = 320;
 const BASE_RADIUS = 20;
 const TOP_RADIUS = 110;
 const PALETTE = ["#39ff14", "#b6ff9e", "#298d17", "#447e5c", "#e8ffe0"].map((hex) => new Color(hex));
-
+const LAG = 4; 
 
 type Particles = {
   angle: Float32Array;     
@@ -59,6 +59,7 @@ function makeParticles(): Particles {
 export function SandTornado({handRef}:{ handRef: HandRef }){
     const pointsRef = useRef<Points>(null);
     const particlesRef = useRef<Particles | null>(null);
+    const lagRef = useRef<{ x: number; y: number } | null>(null);
     const summon = useSummon(3);
     const dot = useMemo(() => makeDotTexture(), []);
 
@@ -87,6 +88,18 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
 
     const pos = toScene(landmarks[9],state.size);
     points.position.set(pos.x,pos.y,0);
+
+    if (!lagRef.current) {
+      lagRef.current = { x: pos.x, y: pos.y };
+    }
+    const lag = lagRef.current;
+    const follow = Math.min(1, delta * LAG);
+
+    lag.x += (pos.x - lag.x) * follow;
+    lag.y += (pos.y - lag.y) * follow;
+
+    const dx = lag.x - pos.x;   
+    const dy = lag.y - pos.y;
     
     for (let i = 0; i < COUNT; i++) {
        p.angle[i] += p.speed[i] * delta
@@ -102,8 +115,10 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
       }
       const h = p.height[i];
       const r = (BASE_RADIUS + (TOP_RADIUS - BASE_RADIUS) * h) * p.spread[i];
-      p.positions[i * 3]     = Math.cos(p.angle[i]) * r;
-      p.positions[i * 3 + 1] = h * HEIGHT * grow;
+      const bend = h * h;
+      p.positions[i * 3]     = Math.cos(p.angle[i]) * r + dx * bend;
+      p.positions[i * 3 + 1] = h * HEIGHT * grow     + dy * bend;
+
       p.positions[i * 3 + 2] = Math.sin(p.angle[i]) * r;
       
       const fade = Math.min(h / 0.15, (1 - h) / 0.3, 1);  
