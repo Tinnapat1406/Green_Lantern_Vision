@@ -12,9 +12,9 @@ import { handScale } from "@/app/lib/scale";
 
 
 const COUNT = 3000;
-const HEIGHT = 320;
-const BASE_RADIUS = 20;
-const TOP_RADIUS = 110;
+const HEIGHT = 160;
+const BASE_RADIUS = 10;
+const TOP_RADIUS = 55;
 const PALETTE = ["#39ff14", "#b6ff9e", "#298d17", "#447e5c", "#e8ffe0"].map((hex) => new Color(hex));
 const LAG = 3; 
 
@@ -99,9 +99,10 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
     lag.x += (pos.x - lag.x) * follow;
     lag.y += (pos.y - lag.y) * follow;
 
-    const dx = lag.x - pos.x;   
+    const dx = lag.x - pos.x;
     const dy = lag.y - pos.y;
-    
+    const k = handScale(landmarks, state.size);
+
     for (let i = 0; i < COUNT; i++) {
        p.angle[i] += p.speed[i] * delta
        p.height[i] += delta * 0.4
@@ -115,10 +116,10 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
         p.height[i] -= 1
       }
       const h = p.height[i];
-      const r = (BASE_RADIUS + (TOP_RADIUS - BASE_RADIUS) * h) * p.spread[i];
+      const r = (BASE_RADIUS + (TOP_RADIUS - BASE_RADIUS) * h) * p.spread[i] * k;
       const bend = h * h;
       p.positions[i * 3]     = Math.cos(p.angle[i]) * r + dx * bend;
-      p.positions[i * 3 + 1] = h * HEIGHT * grow     + dy * bend;
+      p.positions[i * 3 + 1] = h * HEIGHT * grow * k + dy * bend;
 
       p.positions[i * 3 + 2] = Math.sin(p.angle[i]) * r;
       
@@ -129,7 +130,6 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
     
     points.geometry.attributes.position.needsUpdate = true;
     points.geometry.attributes.color.needsUpdate = true;
-    points.scale.setScalar(grow * 0.5 * handScale(landmarks,state.size)); 
 
 
   });

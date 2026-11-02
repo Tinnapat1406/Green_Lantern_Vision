@@ -6,6 +6,7 @@ import { AdditiveBlending, BufferAttribute, Color, type Points } from "three";
 import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { easeOut } from "@/app/hooks/useSummon";
 import { makeDotTexture } from "@/app/lib/glow";
+import { handScale } from "@/app/lib/scale";
 
 const COUNT = 200;
 const DURATION = 0.7;
@@ -57,6 +58,7 @@ export function SparkleBurst({ handRef, finger }: ConstructProps) {
       points.geometry.setAttribute("color", new BufferAttribute(sparksRef.current.colors, 4));
       const pos = ringAnchor(landmarks, finger, state.size);
       points.position.set(pos.x, pos.y, 2);
+      points.scale.setScalar(handScale(landmarks, state.size));
     }
 
     age.current += delta;
@@ -74,7 +76,6 @@ export function SparkleBurst({ handRef, finger }: ConstructProps) {
         s.positions[i * 3 + 1] = s.dy[i] * travel;
         s.positions[i * 3 + 2] = 0;
 
-        s.colors[i * 4 + 3] = 1-t
         s.colors[i * 4 + 3] = (1 - t) * (0.5 + 0.5 * Math.sin(age.current * 40 + i));
         
 

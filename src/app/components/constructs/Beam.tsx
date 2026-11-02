@@ -37,8 +37,9 @@ export function Beam({ handRef, finger }: ConstructProps) {
         
         group.rotation.z = angle - Math.PI / 2;
 
-        const length = LENGTH * easeOut(summon.current); 
-        group.scale.setScalar(easeOut(summon.current) * handScale(landmarks,state.size));
+        const s = easeOut(summon.current) * handScale(landmarks, state.size);
+        const length = LENGTH * s;
+        group.scale.setScalar(s);
         group.position.set(
             start.x + Math.cos(angle) * length / 2, 
             start.y + Math.sin(angle) * length / 2, 
