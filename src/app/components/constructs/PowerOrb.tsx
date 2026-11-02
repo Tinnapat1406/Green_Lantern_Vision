@@ -6,6 +6,7 @@ import { type Group , AdditiveBlending} from "three";
 import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
 import { makeGlowTexture } from "@/app/lib/glow";
+import { handScale } from "@/app/lib/scale";
 
 
 
@@ -28,7 +29,7 @@ export function PowerOrb({ handRef, finger }: ConstructProps) {
 
         const t = state.clock.getElapsedTime();
         const pulse = 1 + Math.sin(t * 8) * 0.50;
-        group.scale.setScalar(pulse * easeOut(summon.current));
+        group.scale.setScalar(pulse * easeOut(summon.current) * handScale(landmarks,state.size));
 
 
     });

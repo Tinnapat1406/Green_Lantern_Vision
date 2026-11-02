@@ -7,6 +7,7 @@ import type { HandRef } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
 import { makeDotTexture } from "@/app/lib/glow";
+import { handScale } from "@/app/lib/scale";
 
 
 
@@ -128,6 +129,8 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
     
     points.geometry.attributes.position.needsUpdate = true;
     points.geometry.attributes.color.needsUpdate = true;
+    points.scale.setScalar(grow * 0.5 * handScale(landmarks,state.size)); 
+
 
   });
 

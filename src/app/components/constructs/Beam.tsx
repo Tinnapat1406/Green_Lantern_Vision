@@ -6,6 +6,7 @@ import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
 import { AdditiveBlending, type Group } from "three";
+import { handScale } from "@/app/lib/scale";
 
 
 const LENGTH = 2000; 
@@ -37,7 +38,7 @@ export function Beam({ handRef, finger }: ConstructProps) {
         group.rotation.z = angle - Math.PI / 2;
 
         const length = LENGTH * easeOut(summon.current); 
-        group.scale.setScalar(easeOut(summon.current));
+        group.scale.setScalar(easeOut(summon.current) * handScale(landmarks,state.size));
         group.position.set(
             start.x + Math.cos(angle) * length / 2, 
             start.y + Math.sin(angle) * length / 2, 

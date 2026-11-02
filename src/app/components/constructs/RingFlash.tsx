@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { AdditiveBlending, type Sprite } from "three";
 import { ringAnchor, type ConstructProps} from "@/app/lib/anchor";
 import { makeGlowTexture } from "@/app/lib/glow";
+import { handScale } from "@/app/lib/scale";
 
 
 const DURATION = 0.4;
@@ -27,7 +28,7 @@ export function RingFlash({ handRef,finger }: ConstructProps) {
             const pos = ringAnchor(landmarks,finger,state.size);
             sprite.position.set(pos.x, pos.y, 1);
 
-            sprite.scale.setScalar(40 + t * 260); 
+            sprite.scale.setScalar((40 + t * 260) * handScale(landmarks,state.size)); 
             sprite.material.opacity = 1 - t;
             
         

@@ -6,6 +6,7 @@ import type { Group } from "three";
 import { ConstructProps, ringAnchor} from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
 import { AdditiveBlending, type MeshBasicMaterial } from "three";
+import { handScale } from "@/app/lib/scale";
 
 
 export function Shield({ handRef,finger }: ConstructProps) {
@@ -24,7 +25,7 @@ export function Shield({ handRef,finger }: ConstructProps) {
         group.visible = true;
         const pos = ringAnchor(landmarks,finger,state.size);
         group.position.set(pos.x, pos.y, 0);
-        group.scale.setScalar(easeOut(summon.current))
+        group.scale.setScalar(easeOut(summon.current) * handScale(landmarks,state.size));
 
 
         const t = state.clock.getElapsedTime();
