@@ -26,6 +26,7 @@ export function Shield({ handRef,finger }: ConstructProps) {
         group.position.set(pos.x, pos.y, 0);
         group.scale.setScalar(easeOut(summon.current))
 
+
         const t = state.clock.getElapsedTime();
         if (fillRef.current) {
           fillRef.current.opacity = 0.25 + Math.sin(t * 8) * 0.05;
