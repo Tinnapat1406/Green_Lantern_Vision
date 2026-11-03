@@ -7,7 +7,7 @@ import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
 import { AdditiveBlending, Mesh, type Group } from "three";
 import { handScale } from "@/app/lib/scale";
-import { getGlowTexture, makeBeamTexture } from "@/app/lib/glow";
+import { getGlowTexture, getBeamTexture } from "@/app/lib/glow";
 
  
 const LENGTH = 2000; 
@@ -20,7 +20,7 @@ export function Beam({ handRef, finger }: ConstructProps) {
     const summon = useSummon();
     const groupRef = useRef<Group>(null);
     const beamRef = useRef<Mesh>(null);
-    const beamTex = useMemo(() => makeBeamTexture(), []);
+    const beamTex = useMemo(() => getBeamTexture(), []);
     const glow = useMemo(() => getGlowTexture(), []);
     
 
