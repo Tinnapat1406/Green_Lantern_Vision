@@ -6,7 +6,7 @@ import { BufferAttribute, type Points ,Color} from "three";
 import type { HandRef } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
-import { makeDotTexture } from "@/app/lib/glow";
+import { getDotTexture} from "@/app/lib/glow";
 import { handScale } from "@/app/lib/scale";
 
 
@@ -62,7 +62,8 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
     const particlesRef = useRef<Particles | null>(null);
     const lagRef = useRef<{ x: number; y: number } | null>(null);
     const summon = useSummon(3);
-    const dot = useMemo(() => makeDotTexture(), []);
+    const dot  = useMemo(() => getDotTexture(), []);   
+
 
 
     useFrame((state, delta) => {

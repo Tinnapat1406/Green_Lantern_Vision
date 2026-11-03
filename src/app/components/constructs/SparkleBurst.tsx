@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { AdditiveBlending, BufferAttribute, Color, type Points } from "three";
 import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { easeOut } from "@/app/hooks/useSummon";
-import { makeDotTexture } from "@/app/lib/glow";
+import { getDotTexture, makeDotTexture } from "@/app/lib/glow";
 import { handScale } from "@/app/lib/scale";
 
 const COUNT = 200;
@@ -44,7 +44,8 @@ export function SparkleBurst({ handRef, finger }: ConstructProps) {
   const pointsRef = useRef<Points>(null);
   const sparksRef = useRef<Sparks | null>(null);
   const age = useRef(0);
-  const dot = useMemo(() => makeDotTexture(), []);
+      const dot  = useMemo(() => getDotTexture(), []);   
+
 
   useFrame((state, delta) => {
     const points = pointsRef.current;

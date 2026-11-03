@@ -34,3 +34,20 @@ export function makeDotTexture(){
   return new CanvasTexture(canvas);
 
 }
+
+let glowCache: CanvasTexture | null = null;
+let dotCache: CanvasTexture | null = null;
+
+export function getGlowTexture() {
+  if (!glowCache) {
+    glowCache = makeGlowTexture();
+  }
+  return glowCache;
+}
+
+export function getDotTexture() {
+  if (!dotCache) {
+    dotCache = makeDotTexture();
+  }
+  return dotCache;
+}

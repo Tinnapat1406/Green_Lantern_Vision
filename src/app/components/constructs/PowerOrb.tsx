@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { type Group , AdditiveBlending} from "three";
 import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
-import { makeGlowTexture } from "@/app/lib/glow";
+import { getGlowTexture } from "@/app/lib/glow";
 import { handScale } from "@/app/lib/scale";
 
 
@@ -13,7 +13,7 @@ import { handScale } from "@/app/lib/scale";
 export function PowerOrb({ handRef, finger }: ConstructProps) {
     const groupRef = useRef<Group>(null);
     const summon = useSummon();  
-    const glow = useMemo(() => makeGlowTexture(), []);
+    const glow = useMemo(() => getGlowTexture(), []); 
 
     useFrame((state) => {
         const group = groupRef.current;
