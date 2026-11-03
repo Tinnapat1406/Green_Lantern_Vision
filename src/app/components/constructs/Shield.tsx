@@ -1,18 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import type { Group } from "three";
+import type { Group, Mesh } from "three";
 import { ConstructProps, ringAnchor} from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
 import { AdditiveBlending, type MeshBasicMaterial } from "three";
 import { handScale } from "@/app/lib/scale";
+import { getShieldTexture } from "@/app/lib/glow";
 
 
 export function Shield({ handRef,finger }: ConstructProps) {
     const groupRef = useRef<Group>(null);
     const summon = useSummon();   
     const fillRef = useRef<MeshBasicMaterial>(null);
+    const shieldTex = useMemo(() => getShieldTexture(), []);
+    const rippleRef = useRef<Mesh>(null);             
+    const rippleMatRef = useRef<MeshBasicMaterial>(null); 
+
+
 
     useFrame((state) => {
         const group = groupRef.current;
@@ -30,23 +36,35 @@ export function Shield({ handRef,finger }: ConstructProps) {
 
         const t = state.clock.getElapsedTime();
         if (fillRef.current) {
-          fillRef.current.opacity = 0.25 + Math.sin(t * 8) * 0.05;
+          fillRef.current.opacity = 0.85 + Math.sin(t * 8) * 0.15;
+
+          const wave = (t * 0.8) % 1;
+          if (rippleRef.current) {
+            rippleRef.current.scale.setScalar(wave);          
+          }
+          if (rippleMatRef.current) {
+            rippleMatRef.current.opacity = 0.5 * (1 - wave);   
+          }
+
         }
     });
 
 
 
     return(
-    <group ref={groupRef}>
-      <mesh>
-        <circleGeometry args={[120, 64]} />
-        <meshBasicMaterial ref={fillRef} color="#3b842e" transparent opacity={0.2}
+      <group ref={groupRef}>
+        <mesh>
+          <planeGeometry args={[280, 280]} />
+        <meshBasicMaterial ref={fillRef} map={shieldTex} transparent
           blending={AdditiveBlending} depthWrite={false} />
+       </mesh>
+
+       <mesh ref={rippleRef} position={[0, 0, 0.5]}>
+        <planeGeometry args={[280, 280]} />
+        <meshBasicMaterial ref={rippleMatRef} map={shieldTex} transparent
+        blending={AdditiveBlending} depthWrite={false} />
       </mesh>
-      <mesh>
-        <torusGeometry args={[120, 4, 16, 64]} />
-        <meshBasicMaterial color="#b6ff9e" blending={AdditiveBlending} />   {/* ขอบสว่างกว่าเนื้อ */}
-      </mesh>
-    </group>
+
+      </group>
     );
 }

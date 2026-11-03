@@ -83,3 +83,34 @@ export function makeBeamTexture() {
   ctx.fillRect(0, 0, width, height);
   return new CanvasTexture(canvas);
 }
+
+let shieldCache: CanvasTexture | null = null;
+
+export function getShieldTexture() {
+  if (!shieldCache) {
+    shieldCache = makeShieldTexture();
+  }
+  return shieldCache;
+}
+
+export function makeShieldTexture() {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  g.addColorStop(0,    "rgba(57, 255, 20, 0.05)");
+  g.addColorStop(0.6,  "rgba(57, 255, 20, 0.12)");
+  g.addColorStop(0.8,  "rgba(57, 255, 20, 0.35)");
+  g.addColorStop(0.86, "rgba(232, 255, 224, 1)");   
+  g.addColorStop(0.9,  "rgba(182, 255, 158, 0.5)");
+  g.addColorStop(1,    "rgba(57, 255, 20, 0)");
+
+
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  return new CanvasTexture(canvas);
+}
+
