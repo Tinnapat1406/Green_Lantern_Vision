@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon , easeOut } from "@/app/hooks/useSummon";
-import { AdditiveBlending, Mesh, type Group } from "three";
+import { AdditiveBlending, type Mesh, type Group } from "three";
 import { handScale } from "@/app/lib/scale";
 import { getGlowTexture, getBeamTexture } from "@/app/lib/glow";
 

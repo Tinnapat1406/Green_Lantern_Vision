@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { AdditiveBlending, BufferAttribute, Color, type Points } from "three";
 import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { easeOut } from "@/app/hooks/useSummon";
-import { getDotTexture, makeDotTexture } from "@/app/lib/glow";
+import { getDotTexture} from "@/app/lib/glow";
 import { handScale } from "@/app/lib/scale";
 
 const COUNT = 200;
