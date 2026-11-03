@@ -51,3 +51,25 @@ export function getDotTexture() {
   }
   return dotCache;
 }
+
+export function makeBeamTexture() {
+  const width = 64;
+  const height = 4;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d")!;
+
+  const g = ctx.createLinearGradient(0, 0, width, 0);
+  g.addColorStop(0, "rgba(255, 255, 255, 0)");
+  g.addColorStop(0.3, "rgb(94, 171, 133)");
+  g.addColorStop(0.45, "rgba(46, 96, 50, 0)");
+  g.addColorStop(0.5, "rgb(255, 255, 255)");
+  g.addColorStop(0.55, "rgba(180, 235, 185, 0)");
+  g.addColorStop(0.7, "rgb(46, 96, 50)");
+  g.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, width, height);
+  return new CanvasTexture(canvas);
+}
