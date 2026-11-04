@@ -2,7 +2,7 @@
 
 import { useRef,useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { type Group , AdditiveBlending, Sprite} from "three";
+import { type Group , AdditiveBlending,type Sprite} from "three";
 import { ringAnchor, type ConstructProps } from "@/app/lib/anchor";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
 import { getGlowTexture } from "@/app/lib/glow";
