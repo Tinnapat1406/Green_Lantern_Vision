@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, type RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AdditiveBlending, Group, type Mesh } from "three";
+import { AdditiveBlending, Group } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ringPosition, type Finger } from "@/app/lib/fingers";
 import { toScene } from "@/app/lib/coords";
@@ -14,6 +14,7 @@ import { RingFlash } from "./constructs/RingFlash";
 import { SandTornado } from "./constructs/SandTornado";
 import { SparkleBurst } from "./constructs/SparkleBurst";
 import { getGlowTexture } from "../lib/glow";
+import { handScale } from "../lib/scale";
 
 
 type Props = {
@@ -26,11 +27,12 @@ type MarkerProps = Props & { finger: Finger };
 function RingMarker({ handRef, finger }: MarkerProps) {
   const groupRef = useRef<Group>(null);
   const glow = useMemo(() => getGlowTexture(), []);
-  const t = state.clock.getElapsedTime();
+
   
 
   useFrame((state) => {
     const group = groupRef.current;
+    const t = state.clock.getElapsedTime();
     if (!group) return;
 
     const landmarks = handRef.current;
@@ -44,7 +46,7 @@ function RingMarker({ handRef, finger }: MarkerProps) {
         const pos = ringPosition(landmarks, finger);
         const scenePos = toScene(pos, state.size);   // ← ใช้ state.size ได้เลย
         group.position.set(scenePos.x, scenePos.y, 0);
-        group.scale.setScalar(1 + Math.sin(t * 2) * 0.08);
+        group.scale.setScalar((1 + Math.sin(t * 2) * 0.08)*handScale(landmarks, state.size)); 
 
   });
 
