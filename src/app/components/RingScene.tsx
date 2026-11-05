@@ -24,25 +24,27 @@ type MarkerProps = Props & { finger: Finger };
 
 
 function RingMarker({ handRef, finger }: MarkerProps) {
-  const meshRef = useRef<Mesh>(null);
   const groupRef = useRef<Group>(null);
   const glow = useMemo(() => getGlowTexture(), []);
+  const t = state.clock.getElapsedTime();
+  
 
   useFrame((state) => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
+    const group = groupRef.current;
+    if (!group) return;
 
     const landmarks = handRef.current;
     
     if (!landmarks) {
-        mesh.visible = false;
+        group.visible = false;
         return;
         }
-        mesh.visible = true;
+        group.visible = true;
 
         const pos = ringPosition(landmarks, finger);
         const scenePos = toScene(pos, state.size);   // ← ใช้ state.size ได้เลย
-        mesh.position.set(scenePos.x, scenePos.y, 0);
+        group.position.set(scenePos.x, scenePos.y, 0);
+        group.scale.setScalar(1 + Math.sin(t * 2) * 0.08);
 
   });
 
