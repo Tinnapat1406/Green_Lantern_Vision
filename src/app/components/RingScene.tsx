@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, type RefObject } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import type { Mesh } from "three";
+import { AdditiveBlending, Group, type Mesh } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ringPosition, type Finger } from "@/app/lib/fingers";
 import { toScene } from "@/app/lib/coords";
@@ -13,6 +13,7 @@ import { PowerOrb } from "./constructs/PowerOrb";
 import { RingFlash } from "./constructs/RingFlash";
 import { SandTornado } from "./constructs/SandTornado";
 import { SparkleBurst } from "./constructs/SparkleBurst";
+import { getGlowTexture } from "../lib/glow";
 
 
 type Props = {
@@ -24,6 +25,8 @@ type MarkerProps = Props & { finger: Finger };
 
 function RingMarker({ handRef, finger }: MarkerProps) {
   const meshRef = useRef<Mesh>(null);
+  const groupRef = useRef<Group>(null);
+  const glow = useMemo(() => getGlowTexture(), []);
 
   useFrame((state) => {
     const mesh = meshRef.current;
@@ -44,10 +47,19 @@ function RingMarker({ handRef, finger }: MarkerProps) {
   });
 
    return (
-    <mesh ref={meshRef}>
-      <torusGeometry args={[14, 3, 12, 32]} />   {/* ห่วงรัศมี 14px หนา 3px */}
-      <meshBasicMaterial color="#298d17" wireframe />
-    </mesh>
+    <group ref={groupRef}>
+  {/* glow ด้านหลังแหวน */}
+      <sprite scale={[60, 60, 1]}>
+        <spriteMaterial map={glow} transparent opacity={0.6}
+          blending={AdditiveBlending} depthWrite={false} />
+      </sprite>
+  {/* ตัวแหวน: ห่วงทึบ บาง สีสว่าง */}
+      <mesh position={[0, 0, 1]}>
+        <torusGeometry args={[12, 2, 12, 48]} />
+        <meshBasicMaterial color="#b6ff9e" blending={AdditiveBlending} />
+      </mesh>
+    </group>
+
   );
 }
 
