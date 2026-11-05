@@ -2,7 +2,7 @@
 
 import { useRef, useMemo} from "react";
 import { useFrame } from "@react-three/fiber";
-import { BufferAttribute, type Points ,Color} from "three";
+import { BufferAttribute, type Points ,Color, AdditiveBlending} from "three";
 import type { HandRef } from "@/app/lib/anchor";
 import { toScene } from "@/app/lib/coords";
 import { useSummon, easeOut } from "@/app/hooks/useSummon";
@@ -138,7 +138,7 @@ export function SandTornado({handRef}:{ handRef: HandRef }){
   return (
     <points ref={pointsRef}>
       <bufferGeometry />
-      <pointsMaterial vertexColors color="#ffffff" map={dot} size={6} sizeAttenuation={false} transparent opacity={0.85} depthWrite={false} />
+      <pointsMaterial vertexColors color="#ffffff" map={dot} size={6} sizeAttenuation={false} transparent opacity={0.85} depthWrite={false} blending={AdditiveBlending}/>
     </points>
   );
 
