@@ -55,10 +55,10 @@ export function useHandTracking(
             const next = result.landmarks[0];
             const prev = handRef.current;
 
-            if (next) lostSince = 0;
             if (!next) {
-                lostSince = now;
-                lostSince > GRACE_MS && (handRef.current = null);
+                if (lostSince === 0) lostSince = now;
+                if (now - lostSince > GRACE_MS) handRef.current = null;
+
             } else if (!prev) {
                 handRef.current = next;           
             } else {
