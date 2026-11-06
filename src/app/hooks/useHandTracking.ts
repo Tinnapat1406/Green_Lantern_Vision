@@ -29,6 +29,8 @@ export function useHandTracking(
     let candidateSince = 0;                 
     const HOLD_MS = 150;
     const SMOOTH = 0.5; 
+    const GRACE_MS = 200;
+    let lostSince = 0;
 
     function loop(){
         const video = videoRef.current;
@@ -53,8 +55,10 @@ export function useHandTracking(
             const next = result.landmarks[0];
             const prev = handRef.current;
 
+            if (next) lostSince = 0;
             if (!next) {
-                handRef.current = null;
+                lostSince = now;
+                lostSince > GRACE_MS && (handRef.current = null);
             } else if (!prev) {
                 handRef.current = next;           
             } else {
