@@ -5,7 +5,7 @@ import { useHandTracking } from "../hooks/useHandTracking";
 import { useRingDetection } from "../hooks/useRingDetection";
 import { RingScene } from "./RingScene";
 import { FINGERS } from "@/app/lib/fingers";
-import {modelReady} from "@/app/hooks/useHandTracking";
+import { GestureGuide } from "./GestureGuide";
 
 
 
@@ -13,7 +13,7 @@ export function CameraFeed() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [status, setStatus] = useState("starting");
     const [aspect, setAspect] = useState(16 / 9);
-    const { gesture, handRef } = useHandTracking(videoRef, status === "ready");
+    const { gesture, handRef, modelReady } = useHandTracking(videoRef, status === "ready");
     const [manualRing, setManualRing] = useState(false);
     const  detectFinger = useRingDetection(videoRef, handRef, status === "ready" && !manualRing);
     const ringFinger = manualRing ? FINGERS[2] : detectFinger
@@ -50,17 +50,6 @@ export function CameraFeed() {
             className="relative"
             style={{ aspectRatio: aspect, width: `min(100vw, ${aspect * 100}vh)` }}
             >
-            {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-                    <p className="animate-pulse font-mono text-xl text-green-400">
-                        {status === "starting" && "Starting camera..."}
-                        {status === "denied" && "Camera access denied."}
-                        {status === "error" && "Error starting camera."}
-                        {status === "ready" && !modelReady && "Loading model..."}
-                    </p>
-                </div>
-            )}
-           
             <video
                 ref={videoRef}
                 playsInline
@@ -80,6 +69,19 @@ export function CameraFeed() {
             }`}>
                 {manualRing ? "Ring : On" :"Ring :Auto"}
             </button>
+
+            <GestureGuide active={gesture} />
+
+            {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+                    <p className="animate-pulse font-mono text-xl text-green-400">
+                        {status === "starting" && "Starting camera..."}
+                        {status === "denied" && "Camera access denied."}
+                        {status === "error" && "Error starting camera."}
+                        {status === "ready" && !modelReady && "Loading model..."}
+                    </p>
+                </div>
+            )}
             </div>
         </div>
     );

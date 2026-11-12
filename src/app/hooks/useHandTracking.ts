@@ -88,6 +88,7 @@ export function useHandTracking(
         return;
       }
       recognizer = created;
+      setModelReady(true);
       loop();
     }
     init();
@@ -99,6 +100,6 @@ export function useHandTracking(
     };
  },[enabled, videoRef]);
 
-  return {gesture, handRef};
+  return {gesture, handRef, modelReady};
 
 }
