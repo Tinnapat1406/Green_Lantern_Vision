@@ -15,6 +15,7 @@ export function useHandTracking(
     enabled: boolean
 ) {
     const [gesture, setGesture] = useState<string | null>(null);
+    const [modelReady, setModelReady] = useState(false);
     const handRef = useRef<NormalizedLandmark[] | null>(null);
 
   useEffect(() => {
