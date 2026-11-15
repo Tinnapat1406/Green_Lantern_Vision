@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { AdditiveBlending, Group } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ringPosition, type Finger } from "@/app/lib/fingers";
 import { toScene } from "@/app/lib/coords";
-import { gestureToConstruct } from "@/app/lib/constructs";
+import { ConstructType, gestureToConstruct } from "@/app/lib/constructs";
 import { Shield } from "./constructs/Shield";
 import { Beam } from "./constructs/Beam";
 import { PowerOrb } from "./constructs/PowerOrb";
@@ -16,6 +16,7 @@ import { SparkleBurst } from "./constructs/SparkleBurst";
 import { getGlowTexture } from "../lib/glow";
 import { handScale } from "../lib/scale";
 
+const EXIT_MS = 200;
 
 type Props = {
   handRef: RefObject<NormalizedLandmark[] | null>;
@@ -27,8 +28,6 @@ type MarkerProps = Props & { finger: Finger };
 function RingMarker({ handRef, finger }: MarkerProps) {
   const groupRef = useRef<Group>(null);
   const glow = useMemo(() => getGlowTexture(), []);
-
-  
 
   useFrame((state) => {
     const group = groupRef.current;
@@ -49,6 +48,7 @@ function RingMarker({ handRef, finger }: MarkerProps) {
         group.scale.setScalar((1 + Math.sin(t * 2) * 0.08)*handScale(landmarks, state.size)); 
 
   });
+
 
    return (
     <group ref={groupRef}>
@@ -73,7 +73,16 @@ type SceneProps = Props & {
 };
 
 export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
-  const construct = gestureToConstruct(gesture);
+    const target = gestureToConstruct(gesture);
+    const [shown, setShown] = useState<ConstructType>("none");
+    const display = shown === "none" ? target : shown;
+    const leaving = display !== target;
+
+      useEffect(() => {
+        if (shown === target) return;
+          const id = setTimeout(() => setShown(target), leaving ? EXIT_MS : 0);
+        return () => clearTimeout(id);
+      }, [shown, target, leaving]);
   
   return (
     <div className="pointer-events-none absolute inset-0">
@@ -82,12 +91,12 @@ export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
         {ringFinger && (
           <>
             <RingMarker handRef={handRef} finger={ringFinger} />
-            {construct === "shield" && <Shield handRef={handRef} finger={ringFinger} />}
-            {construct === "beam" && <Beam handRef={handRef} finger={ringFinger} />}
-            {construct === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} />}
-            {construct === "sand" && <SandTornado handRef={handRef} />}
-            {construct !== "none" && <RingFlash key={construct} handRef={handRef} finger={ringFinger} />}
-            <SparkleBurst key={`burst-${construct}`} handRef={handRef} finger={ringFinger} />
+            {display === "shield" && <Shield handRef={handRef} finger={ringFinger} />}
+            {display === "beam" && <Beam handRef={handRef} finger={ringFinger} />}
+            {display === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} />}
+            {display === "sand" && <SandTornado handRef={handRef} />}
+            {display !== "none" && <RingFlash key={display} handRef={handRef} finger={ringFinger} />}
+            <SparkleBurst key={`burst-${display}`} handRef={handRef} finger={ringFinger} />
 
           </>
         )}

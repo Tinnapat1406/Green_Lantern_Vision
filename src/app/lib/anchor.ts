@@ -8,6 +8,7 @@ export type HandRef = RefObject<NormalizedLandmark[] | null>;
 export type ConstructProps ={
     handRef: HandRef;
     finger: Finger;
+    leaving?: boolean;
 }
 
 export function ringAnchor(

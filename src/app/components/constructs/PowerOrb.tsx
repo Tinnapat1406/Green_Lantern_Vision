@@ -10,9 +10,9 @@ import { handScale } from "@/app/lib/scale";
 
 
 
-export function PowerOrb({ handRef, finger }: ConstructProps) {
+export function PowerOrb({ handRef, finger , leaving }: ConstructProps) {
     const groupRef = useRef<Group>(null);
-    const summon = useSummon();  
+    const summon = useSummon(6, leaving);
     const glow = useMemo(() => getGlowTexture(), []); 
     const coreRef = useRef<Sprite>(null);
     const midRef = useRef<Sprite>(null);

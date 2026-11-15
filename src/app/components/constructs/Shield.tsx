@@ -10,9 +10,9 @@ import { handScale } from "@/app/lib/scale";
 import { getShieldTexture } from "@/app/lib/glow";
 
 
-export function Shield({ handRef,finger }: ConstructProps) {
+export function Shield({ handRef,finger, leaving }: ConstructProps) {
     const groupRef = useRef<Group>(null);
-    const summon = useSummon();   
+    const summon = useSummon(6, leaving);
     const fillRef = useRef<MeshBasicMaterial>(null);
     const shieldTex = useMemo(() => getShieldTexture(), []);
     const rippleRef = useRef<Mesh>(null);             

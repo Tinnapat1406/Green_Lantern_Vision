@@ -15,9 +15,9 @@ const WIDTH = 60;
 
 
 
-export function Beam({ handRef, finger }: ConstructProps) {
+export function Beam({ handRef, finger, leaving }: ConstructProps) {
     
-    const summon = useSummon();
+    const summon = useSummon(6, leaving);
     const groupRef = useRef<Group>(null);
     const beamRef = useRef<Mesh>(null);
     const beamTex = useMemo(() => getBeamTexture(), []);
