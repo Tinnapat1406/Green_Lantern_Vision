@@ -1,5 +1,16 @@
 export function isGreen(r: number, g: number, b: number): boolean {
-    return g > 80 && g > r*1.4 && g > b*1.4;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    
+    if(max !== g) return false;
+    if(max  < 40) return false;
+    
+    const sat = (max - min) / max;
+    if(sat < 0.3) return false;
+
+    const hue = 120 + 60 * (b - r) / (max - min);
+    return hue >= 80 && hue <= 160;   // true green only, excludes yellow (60) and cyan (180)
+
 }
 
 export function greenScore(

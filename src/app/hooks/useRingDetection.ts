@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState, type RefObject } from "react";
-import { FINGERS, ringPosition, type Finger } from "@/app/lib/fingers";
+import { FINGERS, type Finger } from "@/app/lib/fingers";
 import { greenScore } from "@/app/lib/color";
 import type { HandRef } from "@/app/lib/anchor";
 
 const CHECK_MS = 100; 
-const RADIUS = 8;
 const MIN_SCORE = 0.25;
+const SAMPLES = [0.25, 0.5, 0.75];   // points along the finger segment: 0 = base, 1 = joint
+const MISS_LIMIT = 5;                 // 5 × 100ms = keep the ring for 0.5s after losing it
 
 export function useRingDetection(
   videoRef: RefObject<HTMLVideoElement | null>,
@@ -19,9 +20,11 @@ export function useRingDetection(
   useEffect(() => {
     if (!enabled) return;
 
-    const canvas = document.createElement("canvas"); // ไม่แสดงบนจอ ใช้อ่านสีอย่างเดียว
+    const canvas = document.createElement("canvas"); 
     const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
     let last: Finger | null = null;
+    let misses = 0; 
+
 
     const id = setInterval(() => {
       const video = videoRef.current;
@@ -36,13 +39,31 @@ export function useRingDetection(
         let bestScore = MIN_SCORE;
 
         for (const finger of FINGERS) {
-            const spot = ringPosition(landmarks, finger);
-            const score = greenScore(ctx, spot.x * canvas.width, spot.y * canvas.height, RADIUS);
-            if (score > bestScore) {
-                bestScore = score;
-                best = finger;
-            }
+          const a = landmarks[finger.base];
+          const b = landmarks[finger.joint];
+          const len = Math.hypot((b.x - a.x) * canvas.width, (b.y - a.y) * canvas.height);
+          const radius = Math.min(Math.max(Math.round(len * 0.35), 4), 20);
+
+          let score = 0;
+          for (const t of SAMPLES) {
+            const x = a.x + (b.x - a.x) * t;
+            const y = a.y + (b.y - a.y) * t;
+            score = Math.max(score, greenScore(ctx, x * canvas.width, y * canvas.height, radius));
+          }
+
+          if (score > bestScore) {
+            bestScore = score;
+            best = finger;
+          }
         }
+
+      }
+
+      if (best) {
+        misses = 0;
+      } else if (last) {
+        misses++;
+        if (misses < MISS_LIMIT) best = last;
       }
 
       if (best !== last) {
