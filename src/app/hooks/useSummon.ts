@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
 
-const EXIT_SPEED = 0.5;
+const EXIT_SPEED = 200;
 
 
 export function useSummon(speed = 6,leaving = false) {

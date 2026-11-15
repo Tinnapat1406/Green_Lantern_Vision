@@ -21,7 +21,7 @@ const EXIT_MS = 200;
 type Props = {
   handRef: RefObject<NormalizedLandmark[] | null>;
 };
-type MarkerProps = Props & { finger: Finger }; 
+type MarkerProps = Props & { finger: Finger; leaving: boolean }; 
 
 
 
@@ -90,13 +90,13 @@ export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
         
         {ringFinger && (
           <>
-            <RingMarker handRef={handRef} finger={ringFinger} />
+            <RingMarker handRef={handRef} finger={ringFinger} leaving = {leaving} />
             {display === "shield" && <Shield handRef={handRef} finger={ringFinger} />}
             {display === "beam" && <Beam handRef={handRef} finger={ringFinger} />}
             {display === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} />}
-            {display === "sand" && <SandTornado handRef={handRef} />}
+            {display === "sand" && <SandTornado handRef={handRef} leaving={leaving} />}
             {display !== "none" && <RingFlash key={display} handRef={handRef} finger={ringFinger} />}
-            <SparkleBurst key={`burst-${display}`} handRef={handRef} finger={ringFinger} />
+            <SparkleBurst key={`burst-${target}`} handRef={handRef} finger={ringFinger} />
 
           </>
         )}

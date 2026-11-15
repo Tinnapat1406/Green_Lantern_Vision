@@ -57,7 +57,7 @@ function makeParticles(): Particles {
 
 }
 
-export function SandTornado({handRef}:{ handRef: HandRef }){
+export function SandTornado({handRef , leaving}:{ handRef: HandRef ; leaving: boolean }){
     const pointsRef = useRef<Points>(null);
     const particlesRef = useRef<Particles | null>(null);
     const lagRef = useRef<{ x: number; y: number } | null>(null);
