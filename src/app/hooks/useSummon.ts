@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
 
-const EXIT_SPEED = 200;
+const EXIT_SPEED = 5; // 1 / 5 = 0.2s, must match EXIT_MS in RingScene
 
 
 export function useSummon(speed = 6,leaving = false) {

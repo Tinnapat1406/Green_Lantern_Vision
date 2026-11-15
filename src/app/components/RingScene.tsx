@@ -6,7 +6,7 @@ import { AdditiveBlending, Group } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ringPosition, type Finger } from "@/app/lib/fingers";
 import { toScene } from "@/app/lib/coords";
-import { ConstructType, gestureToConstruct } from "@/app/lib/constructs";
+import { type ConstructType, gestureToConstruct } from "@/app/lib/constructs";
 import { Shield } from "./constructs/Shield";
 import { Beam } from "./constructs/Beam";
 import { PowerOrb } from "./constructs/PowerOrb";
@@ -21,7 +21,7 @@ const EXIT_MS = 200;
 type Props = {
   handRef: RefObject<NormalizedLandmark[] | null>;
 };
-type MarkerProps = Props & { finger: Finger; leaving: boolean }; 
+type MarkerProps = Props & { finger: Finger }; 
 
 
 
@@ -90,10 +90,10 @@ export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
         
         {ringFinger && (
           <>
-            <RingMarker handRef={handRef} finger={ringFinger} leaving = {leaving} />
-            {display === "shield" && <Shield handRef={handRef} finger={ringFinger} />}
-            {display === "beam" && <Beam handRef={handRef} finger={ringFinger} />}
-            {display === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} />}
+            <RingMarker handRef={handRef} finger={ringFinger} />
+            {display === "shield" && <Shield handRef={handRef} finger={ringFinger} leaving={leaving} />}
+            {display === "beam" && <Beam handRef={handRef} finger={ringFinger} leaving={leaving} />}
+            {display === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} leaving={leaving} />}
             {display === "sand" && <SandTornado handRef={handRef} leaving={leaving} />}
             {display !== "none" && <RingFlash key={display} handRef={handRef} finger={ringFinger} />}
             <SparkleBurst key={`burst-${target}`} handRef={handRef} finger={ringFinger} />

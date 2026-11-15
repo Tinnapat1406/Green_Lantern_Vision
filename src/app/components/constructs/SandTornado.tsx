@@ -61,7 +61,7 @@ export function SandTornado({handRef , leaving}:{ handRef: HandRef ; leaving: bo
     const pointsRef = useRef<Points>(null);
     const particlesRef = useRef<Particles | null>(null);
     const lagRef = useRef<{ x: number; y: number } | null>(null);
-    const summon = useSummon(3);
+    const summon = useSummon(3, leaving);
     const dot  = useMemo(() => getDotTexture(), []);   
 
 
