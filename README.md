@@ -15,6 +15,8 @@ The app looks for a real, physical green ring. Ten times a second it samples the
 
 No ring at hand? Click **Ring: Auto** in the top-right corner to switch to **Ring: On**. The ring is then placed on your middle finger and every construct works without one. Any bright green band also works for testing, such as green tape, a sticker or a hair tie.
 
+Once the ring is found, a glowing green band appears around that finger and slowly pulses, so you always know where the power will come from.
+
 ## Gestures
 
 | Gesture | Construct | Effect |
@@ -24,9 +26,11 @@ No ring at hand? Click **Ring: Auto** in the top-right corner to switch to **Rin
 | ✊ Closed fist | **Power Orb** | Three layers of light (a white-hot core, a fast-beating aura and a slow-breathing outer halo) that pulse out of sync, so the orb never looks the same twice |
 | 🤲 Palm up | **Sand Tornado** | 3,000 grains of green energy spiral up from your palm in a widening funnel. The top trails behind your hand when you move, so the tornado bends like a real one |
 
-Every summon starts with a flash of light at the ring. Every time a construct changes or disappears, a burst of twinkling sparks breaks off the ring and fades away.
+A guide in the bottom-left corner lists every gesture and lights up the one you're making.
 
-Constructs scale with your hand's distance from the camera. Bring your hand closer and the shield, beam, orb and tornado all grow with it. The size comes from the on-screen distance between your wrist and the base of your middle finger. Both points sit on the rigid palm, so making a fist doesn't change the size.
+Every summon starts with a flash of light at the ring. When you switch gestures, the old construct shrinks back into the ring for 0.2 seconds before the new one grows out. At the same moment, a burst of twinkling sparks breaks off the ring and fades away.
+
+Constructs scale with your hand's distance from the camera. Bring your hand closer and the shield, beam, orb and tornado all grow with it. The size comes from two measurements of the rigid palm: its length (wrist to the base of the middle finger) and its width (base of the index finger to base of the pinky). The app uses whichever is longer. Tilting your hand forward makes the length look shorter, and turning it sideways makes the width look shorter, but rarely both at once, so the size stays steady while you move. Making a fist doesn't change it either.
 
 MediaPipe has no built-in "palm up" gesture, so the app detects it itself. It takes two vectors across the palm in 3D (wrist → index knuckle, wrist → pinky knuckle). Their cross product is the direction the palm faces, and when that points mostly straight up, the gesture counts as palm up.
 
@@ -53,7 +57,9 @@ A few details that make it feel smooth:
 
 - **Landmark smoothing.** Raw landmarks jitter a little every frame, so each point is eased toward its new position (a simple lerp) before anything reads it.
 - **Gesture debouncing.** A new gesture must be held for 150 ms with more than 60% confidence before it counts. This stops constructs from flickering when the model briefly misreads a frame.
-- **Summon animation.** Every construct grows out of the ring with an easing curve, and a flash of light plays at the ring each time. The animation is driven by frame `delta`, so it runs at the same speed on 60 Hz and 120 Hz displays.
+- **Grace period.** If the model loses your hand for a frame or two, the last known position is kept for 200 ms instead of hiding everything at once. Constructs no longer blink when your hand moves fast or the light changes.
+- **Summon and exit animations.** Every construct grows out of the ring with an easing curve, and a flash of light plays at the ring each time. On a gesture change, the old construct stays mounted for 200 ms and runs the same progress value backwards, so it shrinks back into the ring. If you switch back mid-shrink, it simply grows again. Both are driven by frame `delta`, so they run at the same speed on 60 Hz and 120 Hz displays.
+- **Steady scale.** Laptop webcams are noisy, and a distance between two jittery points jitters even more. The hand size is therefore eased over time with `1 - e^(-speed·dt)`. This stays exact no matter how many constructs ask for the size in the same frame.
 - **Light, not paint.** Constructs use additive blending and gradient textures drawn on a canvas, so they add light to the camera image instead of painting flat color over it. Every construct gets its own gradient: a radial glow for the orb, a bright rim for the shield and a cross-section falloff for the beam.
 - **Shared textures.** Each texture is created once and cached for the whole app, so summoning a construct again doesn't allocate new GPU memory.
 - **Particles without re-renders.** Particle positions and colors live in typed arrays that are updated in place each frame and then flagged for upload to the GPU, so 3,000 tornado grains cost one draw call.
@@ -78,7 +84,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and allow camera access. The model (~8 MB) downloads on first load and takes a second or two to initialize.
+Open [http://localhost:3000](http://localhost:3000) and allow camera access. The model (~8 MB) downloads on first load and takes a second or two to initialize. A loading screen shows "Starting camera…" and then "Loading model…" until everything is ready.
 
 ## Project structure
 
@@ -88,6 +94,7 @@ src/app/
 ├─ components/
 │  ├─ CameraFeed.tsx            Opens the webcam and wires everything together
 │  ├─ RingScene.tsx             Three.js overlay: ring marker + active construct
+│  ├─ GestureGuide.tsx          On-screen list of gestures, highlights the active one
 │  └─ constructs/
 │     ├─ Shield.tsx
 │     ├─ Beam.tsx
@@ -98,14 +105,14 @@ src/app/
 ├─ hooks/
 │  ├─ useHandTracking.ts        MediaPipe loop, smoothing, gesture debouncing
 │  ├─ useRingDetection.ts       Finds which finger wears the green ring
-│  └─ useSummon.ts              0 → 1 summon progress + easing
+│  └─ useSummon.ts              0 ↔ 1 summon/exit progress + easing
 └─ lib/                         Pure functions, no React
    ├─ fingers.ts                Landmark indices and ring position per finger
    ├─ coords.ts                 MediaPipe (0–1) → scene pixel coordinates
    ├─ anchor.ts                 Where constructs attach to the hand
    ├─ color.ts                  "Is this pixel green?" and green ratio in an area
    ├─ palm.ts                   Palm-up detection from 3D landmarks
-   ├─ scale.ts                  Construct size from hand distance
+   ├─ scale.ts                  Smoothed construct size from hand distance
    ├─ glow.ts                   Cached glow, dot, beam and shield textures
    └─ constructs.ts             Gesture → construct mapping
 ```
@@ -119,6 +126,10 @@ src/app/
 - [x] Sparkle burst when switching constructs
 - [x] Scale constructs with hand distance from the camera
 - [x] Better light: soft-edged beam, energy-bubble shield, layered orb
+- [x] Loading screen and on-screen gesture guide
+- [x] Constructs shrink back into the ring when you switch gestures
+- [x] No flicker when tracking briefly loses the hand
+- [x] Steady construct size on noisy laptop webcams
 - [ ] More constructs (hammer, wall, chain)
 - [ ] Deploy a live demo
 
