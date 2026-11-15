@@ -3,11 +3,19 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
-export function useSummon(speed = 6) {
+
+const EXIT_SPEED = 0.5;
+
+
+export function useSummon(speed = 6,leaving = false) {
   const progress = useRef(0);
 
   useFrame((_, delta) => {
-    progress.current = Math.min(1, progress.current + delta * speed);  
+    if (leaving) {
+      progress.current = Math.max(0, progress.current - delta * EXIT_SPEED);
+    } else {
+      progress.current = Math.min(1, progress.current + delta * speed);
+    }
   });
   return progress
 }
