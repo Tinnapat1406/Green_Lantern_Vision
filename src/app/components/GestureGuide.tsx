@@ -3,6 +3,9 @@ const GESTURES = [
   { gesture: "Pointing_Up", emoji: "☝️", label: "Beam" },
   { gesture: "Closed_Fist", emoji: "✊", label: "Power Orb" },
   { gesture: "Palm_Up",     emoji: "🤲", label: "Tornado" },
+  { gesture: "Victory",     emoji: "✌️", label: "Hammer" },
+  { gesture: "Thumb_Up",    emoji: "👍", label: "Wall" },
+  { gesture: "ILoveYou",    emoji: "🤟", label: "Chain" },
 ];
 
 export function GestureGuide({ active }: { active: string | null }) {

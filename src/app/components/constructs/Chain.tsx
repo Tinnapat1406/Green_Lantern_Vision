@@ -15,6 +15,7 @@ const DAMPING = 0.985;     // 1 = swings forever, lower = settles faster
 const ITERATIONS = 10;     // more = stiffer links
 const MAX_DT = 1 / 30;     // a long frame would make the simulation explode
 const BALL_SIZE = 110;
+const LINK_STRETCH = 1.6;  // oval links, long enough to overlap their neighbours
 
 type Rope = { x: Float32Array; y: Float32Array; px: Float32Array; py: Float32Array };
 
@@ -27,8 +28,11 @@ function makeRope(x: number, y: number): Rope {
   };
   rope.x.fill(x);
   rope.px.fill(x);
-  rope.y.fill(y);
-  rope.py.fill(y);
+  // Start as a short vertical line so the links know which way to unfold
+  for (let i = 0; i <= LINKS; i++) {
+    rope.y[i] = y - i;
+    rope.py[i] = y - i;
+  }
   return rope;
 }
 
@@ -97,8 +101,10 @@ export function Chain({ handRef, finger, leaving }: ConstructProps) {
       const dx = rope.x[i + 1] - rope.x[i];
       const dy = rope.y[i + 1] - rope.y[i];
       link.position.set((rope.x[i] + rope.x[i + 1]) / 2, (rope.y[i] + rope.y[i + 1]) / 2, i % 2);
-      link.rotation.set(0, i % 2 === 1 ? Math.PI / 2 : 0, Math.atan2(dy, dx) - Math.PI / 2);
-      link.scale.setScalar(k * grow);
+      // ZYX = turn edge-on first, then point along the chain
+      link.rotation.set(0, i % 2 === 1 ? Math.PI / 2 : 0, Math.atan2(dy, dx) - Math.PI / 2, "ZYX");
+      const s = k * grow;
+      link.scale.set(s, s * LINK_STRETCH, s);
     });
 
     // Glowing weight at the end, beating like the orb
@@ -112,7 +118,7 @@ export function Chain({ handRef, finger, leaving }: ConstructProps) {
       <group ref={linksRef}>
         {Array.from({ length: LINKS }, (_, i) => (
           <mesh key={i} scale={0}>
-            {/* An oval ring: a torus stretched along the chain */}
+            {/* A torus, stretched into an oval link each frame */}
             <torusGeometry args={[9, 2.5, 8, 24]} />
             <meshBasicMaterial color="#7dff5a" transparent opacity={0.9} blending={AdditiveBlending} depthWrite={false} />
           </mesh>

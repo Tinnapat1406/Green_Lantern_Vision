@@ -13,6 +13,9 @@ import { PowerOrb } from "./constructs/PowerOrb";
 import { RingFlash } from "./constructs/RingFlash";
 import { SandTornado } from "./constructs/SandTornado";
 import { SparkleBurst } from "./constructs/SparkleBurst";
+import { Hammer } from "./constructs/Hammer";
+import { Wall } from "./constructs/Wall";
+import { Chain } from "./constructs/Chain";
 import { getGlowTexture } from "../lib/glow";
 import { handScale } from "../lib/scale";
 
@@ -95,6 +98,9 @@ export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
             {display === "beam" && <Beam handRef={handRef} finger={ringFinger} leaving={leaving} />}
             {display === "orb" && <PowerOrb handRef={handRef} finger={ringFinger} leaving={leaving} />}
             {display === "sand" && <SandTornado handRef={handRef} leaving={leaving} />}
+            {display === "hammer" && <Hammer handRef={handRef} finger={ringFinger} leaving={leaving} />}
+            {display === "wall" && <Wall handRef={handRef} finger={ringFinger} leaving={leaving} />}
+            {display === "chain" && <Chain handRef={handRef} finger={ringFinger} leaving={leaving} />}
             {display !== "none" && <RingFlash key={display} handRef={handRef} finger={ringFinger} />}
             <SparkleBurst key={`burst-${target}`} handRef={handRef} finger={ringFinger} />
 
