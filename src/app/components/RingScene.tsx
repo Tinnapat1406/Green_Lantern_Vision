@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AdditiveBlending, Group } from "three";
+import { AdditiveBlending, type Group } from "three";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import { ringPosition, type Finger } from "@/app/lib/fingers";
 import { toScene } from "@/app/lib/coords";

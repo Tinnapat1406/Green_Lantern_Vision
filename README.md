@@ -11,7 +11,7 @@ No backend, no Python, no install: the hand-tracking model runs client-side with
 
 ## The ring
 
-The app looks for a real, physical green ring. Ten times a second it samples the camera pixels around each finger's ring position and picks the finger with the most green. Wear the ring on any finger and the power comes out of that finger. Move the ring and the power moves with it. Take it off and you're powerless.
+The app looks for a real, physical green ring. Ten times a second it checks three spots along the base of each finger and picks the finger with the most green. The spots grow and shrink with your finger on screen, and green is judged by hue rather than brightness, so the ring is still found when your hand is tilted, turned palm-forward, in shadow or catching a highlight. If the ring slips out of view for a moment, the app keeps it for half a second before giving up. Wear the ring on any finger and the power comes out of that finger. Move the ring and the power moves with it. Take it off and you're powerless.
 
 No ring at hand? Click **Ring: Auto** in the top-right corner to switch to **Ring: On**. The ring is then placed on your middle finger and every construct works without one. Any bright green band also works for testing, such as green tape, a sticker or a hair tie.
 
@@ -130,6 +130,7 @@ src/app/
 - [x] Constructs shrink back into the ring when you switch gestures
 - [x] No flicker when tracking briefly loses the hand
 - [x] Steady construct size on noisy laptop webcams
+- [x] Detect the ring from more hand angles
 - [ ] More constructs (hammer, wall, chain)
 - [ ] Deploy a live demo
 

@@ -117,7 +117,7 @@ export function SandTornado({handRef , leaving}:{ handRef: HandRef ; leaving: bo
         p.height[i] -= 1
       }
       const h = p.height[i];
-      const r = (BASE_RADIUS + (TOP_RADIUS - BASE_RADIUS) * h) * p.spread[i] * k;
+      const r = (BASE_RADIUS + (TOP_RADIUS - BASE_RADIUS) * h) * p.spread[i] * k * grow;
       const bend = h * h;
       p.positions[i * 3]     = Math.cos(p.angle[i]) * r + dx * bend;
       p.positions[i * 3 + 1] = h * HEIGHT * grow * k + dy * bend;

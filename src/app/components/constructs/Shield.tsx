@@ -37,15 +37,14 @@ export function Shield({ handRef,finger, leaving }: ConstructProps) {
         const t = state.clock.getElapsedTime();
         if (fillRef.current) {
           fillRef.current.opacity = 0.85 + Math.sin(t * 8) * 0.15;
+        }
 
-          const wave = (t * 0.8) % 1;
-          if (rippleRef.current) {
-            rippleRef.current.scale.setScalar(wave);          
-          }
-          if (rippleMatRef.current) {
-            rippleMatRef.current.opacity = 0.5 * (1 - wave);   
-          }
-
+        const wave = (t * 0.8) % 1;
+        if (rippleRef.current) {
+          rippleRef.current.scale.setScalar(wave);
+        }
+        if (rippleMatRef.current) {
+          rippleMatRef.current.opacity = 0.5 * (1 - wave);
         }
     });
 
