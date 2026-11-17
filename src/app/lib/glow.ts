@@ -114,3 +114,33 @@ export function makeShieldTexture() {
   return new CanvasTexture(canvas);
 }
 
+
+let panelCache: CanvasTexture | null = null;
+
+export function getPanelTexture() {
+  if (!panelCache) {
+    panelCache = makePanelTexture();
+  }
+  return panelCache;
+}
+
+// A faint green slab with a glowing white-hot border, used for the hammer head and wall bricks
+export function makePanelTexture() {
+  const size = 128;
+  const inset = 12;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+
+  ctx.fillStyle = "rgba(57, 255, 20, 0.18)";
+  ctx.fillRect(inset, inset, size - inset * 2, size - inset * 2);
+
+  ctx.shadowColor = "rgba(57, 255, 20, 1)";
+  ctx.shadowBlur = 10;
+  ctx.strokeStyle = "rgba(232, 255, 224, 1)";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(inset, inset, size - inset * 2, size - inset * 2);
+
+  return new CanvasTexture(canvas);
+}
