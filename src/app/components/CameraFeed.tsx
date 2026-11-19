@@ -6,7 +6,7 @@ import { useRingDetection } from "../hooks/useRingDetection";
 import { RingScene } from "./RingScene";
 import { FINGERS } from "@/app/lib/fingers";
 import { GestureGuide } from "./GestureGuide";
-import { useDemoHand } from "@/app/lib/demoHand";
+import { useDemoHand } from "../hooks/useDemoHand";
 
 
 

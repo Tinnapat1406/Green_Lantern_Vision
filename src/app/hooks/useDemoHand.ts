@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import type { HandRef } from "./anchor";
+import type { HandRef } from "@/app/lib/anchor";
 
 // An upright open hand in the middle of the frame, in MediaPipe's 0–1 coordinates
 const POSE: [number, number][] = [
