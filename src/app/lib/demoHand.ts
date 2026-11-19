@@ -1,4 +1,6 @@
-import type { RefObject } from "react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 import type { HandRef } from "./anchor";
 
@@ -19,12 +21,20 @@ function ghostHand(seconds: number): NormalizedLandmark[] {
   return POSE.map(([x, y]) => ({ x: x + dx, y: y + dy, z: 0, visibility: 1 }));
 }
 
-// Reads the live hand when there is one, otherwise the ghost hand while a demo is on
-export function withDemoHand(live: HandRef, demoOn: RefObject<boolean>): HandRef {
-  return {
+// A hand ref for the scene: the live hand when there is one,
+// otherwise the ghost hand while a demo is on
+export function useDemoHand(live: HandRef, demo: boolean): HandRef {
+  const demoOn = useRef(demo);
+  useEffect(() => {
+    demoOn.current = demo;
+  }, [demo]);
+
+  // Created once; the getter is only read inside useFrame, never during render
+  const [ref] = useState<HandRef>(() => ({
     get current() {
       if (live.current) return live.current;
       return demoOn.current ? ghostHand(performance.now() / 1000) : null;
     },
-  };
+  }));
+  return ref;
 }

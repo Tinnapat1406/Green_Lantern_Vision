@@ -6,6 +6,7 @@ import { useRingDetection } from "../hooks/useRingDetection";
 import { RingScene } from "./RingScene";
 import { FINGERS } from "@/app/lib/fingers";
 import { GestureGuide } from "./GestureGuide";
+import { useDemoHand } from "@/app/lib/demoHand";
 
 
 
@@ -18,6 +19,17 @@ export function CameraFeed() {
     const  detectFinger = useRingDetection(videoRef, handRef, status === "ready" && !manualRing);
     const ringFinger = manualRing ? FINGERS[2] : detectFinger
     const loading = status !== "ready" || !modelReady;
+
+    // Demo: clicking a gesture in the guide previews its construct.
+    // With no hand in view, a ghost hand floats in the middle of the frame instead.
+    const [demo, setDemo] = useState<string | null>(null);
+    const sceneHandRef = useDemoHand(handRef, demo !== null);
+    const sceneGesture = demo ?? gesture;
+    const sceneFinger = ringFinger ?? (demo ? FINGERS[2] : null);
+
+    function toggleDemo(next: string) {
+        setDemo(demo === next ? null : next);
+    }
 
 
     useEffect(() => {
@@ -56,9 +68,9 @@ export function CameraFeed() {
                 muted
                 className="h-full w-full -scale-x-100"   
             />
-            <RingScene handRef={handRef} gesture={gesture} ringFinger={ringFinger} />
+            <RingScene handRef={sceneHandRef} gesture={sceneGesture} ringFinger={sceneFinger} />
             <p className="absolute top-4 left-4 font-mono text-green-400">
-                {status} · {gesture ?? "no hand"} · ring: {ringFinger?.name ?? "none"}
+                {status} · {gesture ?? "no hand"} · ring: {ringFinger?.name ?? "none"}{demo && ` · demo: ${demo}`}
             </p>
 
             <button onClick ={() => setManualRing((prev)=> !prev)}
@@ -70,7 +82,7 @@ export function CameraFeed() {
                 {manualRing ? "Ring : On" :"Ring :Auto"}
             </button>
 
-            <GestureGuide active={gesture} />
+            <GestureGuide active={sceneGesture} demo={demo} onDemo={toggleDemo} />
 
             {loading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/80">
