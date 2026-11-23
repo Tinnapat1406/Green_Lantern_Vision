@@ -1,12 +1,5 @@
 import { CameraFeed } from "@/app/components/CameraFeed";
 
-
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <CameraFeed />
-
-      
-    </div>
-  );
+  return <CameraFeed />;
 }
