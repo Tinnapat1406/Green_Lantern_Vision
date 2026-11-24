@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useHandTracking } from "../hooks/useHandTracking";
 import { useRingDetection } from "../hooks/useRingDetection";
 import { RingScene } from "./RingScene";
@@ -12,13 +12,15 @@ import { useDemoHand } from "../hooks/useDemoHand";
 
 export function CameraFeed() {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const streamRef = useRef<MediaStream | null>(null);
     const [status, setStatus] = useState("starting");
     const [aspect, setAspect] = useState(16 / 9);
-    const { gesture, handRef, modelReady } = useHandTracking(videoRef, status === "ready");
+    const { gesture, handRef, modelReady, modelFailed, retryModel } = useHandTracking(videoRef, status === "ready");
     const [manualRing, setManualRing] = useState(false);
     const  detectFinger = useRingDetection(videoRef, handRef, status === "ready" && !manualRing);
     const ringFinger = manualRing ? FINGERS[2] : detectFinger
-    const loading = status !== "ready" || !modelReady;
+    const loading = status === "starting" || (status === "ready" && !modelReady && !modelFailed);
+    const cameraFailed = status === "denied" || status === "error";
 
     // Demo: clicking a gesture in the guide previews its construct.
     // With no hand in view, a ghost hand floats in the middle of the frame instead.
@@ -31,30 +33,34 @@ export function CameraFeed() {
         setDemo(demo === next ? null : next);
     }
 
+    const startCamera = useCallback(async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 1280, height: 720, facingMode: "user" },
+            });
+            const video = videoRef.current;
+            if (!video) {
+                stream.getTracks().forEach((track) => track.stop());
+                return;
+            }
+            streamRef.current = stream;
+            video.srcObject = stream;
+            await video.play();
+            setAspect(video.videoWidth / video.videoHeight);
+            setStatus("ready");
+        } catch (err) {
+            setStatus(err instanceof DOMException && err.name === "NotAllowedError" ? "denied" : "error");
+        }
+    }, []);
 
     useEffect(() => {
-        let stream: MediaStream | null = null;
-        async function start() {
-            try { 
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: 1280, height: 720 },
-                });
-                videoRef.current!.srcObject = stream;
-                await videoRef.current!.play();
-                setAspect(videoRef.current!.videoWidth / videoRef.current!.videoHeight);
-                setStatus("ready");
-            } catch (err) {
-                setStatus(err instanceof DOMException && err.name === "NotAllowedError" ? "denied" : "error");
-
-            }
-        }
-
-        start();
+        startCamera();
 
         return() => {
-            stream?.getTracks().forEach((track) => track.stop());
+            streamRef.current?.getTracks().forEach((track) => track.stop());
+            streamRef.current = null;
         };
-    }, []);
+    }, [startCamera]);
 
     return(
          <div className="flex h-screen w-screen items-center justify-center bg-black">
@@ -66,7 +72,7 @@ export function CameraFeed() {
                 ref={videoRef}
                 playsInline
                 muted
-                className="h-full w-full -scale-x-100"   
+                className="h-full w-full -scale-x-100"
             />
             <RingScene handRef={sceneHandRef} gesture={sceneGesture} ringFinger={sceneFinger} />
             <p className="absolute top-4 left-4 font-mono text-green-400">
@@ -79,7 +85,7 @@ export function CameraFeed() {
                 ? "border-green-400 bg-green-400/20 text-green-300 shadow-[0_0_12px_#39ff14]"
                 : "border-white/30 bg-black/50 text-white/70"
             }`}>
-                {manualRing ? "Ring : On" :"Ring :Auto"}
+                {manualRing ? "Ring: On" : "Ring: Auto"}
             </button>
 
             <GestureGuide active={sceneGesture} demo={demo} onDemo={toggleDemo} />
@@ -88,9 +94,46 @@ export function CameraFeed() {
                 <div className="absolute inset-0 flex items-center justify-center bg-black/80">
                     <p className="animate-pulse font-mono text-xl text-green-400">
                         {status === "starting" && "Starting camera..."}
-                        {status === "denied" && "Camera access denied."}
-                        {status === "error" && "Error starting camera."}
                         {status === "ready" && !modelReady && "Loading model..."}
+                    </p>
+                </div>
+            )}
+
+            {modelFailed && !demo && (
+                <div className="absolute inset-x-0 top-1/3 flex flex-col items-center gap-4">
+                    <p className="font-mono text-xl text-green-400">
+                        Failed to load the hand-tracking model.
+                    </p>
+                    <button
+                        onClick={retryModel}
+                        className="rounded-full border border-green-400 bg-green-400/20 px-4 py-2 font-mono text-sm text-green-300 transition hover:bg-green-400/30"
+                    >
+                        Try again
+                    </button>
+                    <p className="font-mono text-sm text-white/40">
+                        Check your connection — the model loads from a CDN
+                    </p>
+                </div>
+            )}
+
+            {/* The camera failed, but the click-to-preview demo needs no camera,
+                so leave the gesture guide reachable instead of covering everything. */}
+            {cameraFailed && !demo && (
+                <div className="absolute inset-x-0 top-1/3 flex flex-col items-center gap-4">
+                    <p className="font-mono text-xl text-green-400">
+                        {status === "denied" ? "Camera access denied." : "Error starting camera."}
+                    </p>
+                    <button
+                        onClick={() => {
+                            setStatus("starting");
+                            startCamera();
+                        }}
+                        className="rounded-full border border-green-400 bg-green-400/20 px-4 py-2 font-mono text-sm text-green-300 transition hover:bg-green-400/30"
+                    >
+                        Try again
+                    </button>
+                    <p className="font-mono text-sm text-white/40">
+                        Or click a gesture in the guide to preview it without a camera
                     </p>
                 </div>
             )}

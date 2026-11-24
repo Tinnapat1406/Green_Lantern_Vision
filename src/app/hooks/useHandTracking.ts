@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { isPalmUp } from "@/app/lib/palm";
 import type { GestureRecognizer, NormalizedLandmark } from "@mediapipe/tasks-vision";
 
@@ -16,7 +16,14 @@ export function useHandTracking(
 ) {
     const [gesture, setGesture] = useState<string | null>(null);
     const [modelReady, setModelReady] = useState(false);
+    const [modelFailed, setModelFailed] = useState(false);
+    const [attempt, setAttempt] = useState(0);
     const handRef = useRef<NormalizedLandmark[] | null>(null);
+
+    const retryModel = useCallback(() => {
+        setModelFailed(false);
+        setAttempt((n) => n + 1);
+    }, []);
 
   useEffect(() => {
     if (!enabled) return;
@@ -29,19 +36,22 @@ export function useHandTracking(
     let candidate: string | null = null;   
     let candidateSince = 0;                 
     const HOLD_MS = 150;
-    const SMOOTH = 0.5; 
+    const SMOOTH_SPEED = 21; // same feel as the old 0.5-per-frame lerp at 30 fps
     const GRACE_MS = 200;
     let lostSince = 0;
 
     function loop(){
         const video = videoRef.current;
         if (recognizer && video && !cancelled && video.readyState >= 2 && video.currentTime !== lastVideoTime) {
-                lastVideoTime = video.currentTime;
+            const dt = lastVideoTime < 0 ? 0 : Math.min(video.currentTime - lastVideoTime, 0.1);
+            const alpha = 1 - Math.exp(-SMOOTH_SPEED * dt);
+            lastVideoTime = video.currentTime;
             const result = recognizer.recognizeForVideo(video, performance.now());
             const now = performance.now();
             const top = result.gestures[0]?.[0];
             const world = result.worldLandmarks[0];
-            const palmUp = world && isPalmUp(world) && top?.categoryName !== "Closed_Fist";
+            const hand = result.handedness[0]?.[0]?.categoryName;
+            const palmUp = world && hand && isPalmUp(world, hand) && top?.categoryName !== "Closed_Fist";
             const name = palmUp ? "Palm_Up" : (top && top.score > 0.6 ? top.categoryName : null); 
             
             if (name !== candidate) {
@@ -66,8 +76,9 @@ export function useHandTracking(
             } else {
                 handRef.current = next.map((point, index) => ({
                     ...point,
-                    x: prev[index].x + (point.x - prev[index].x) * SMOOTH,
-                    y: prev[index].y + (point.y - prev[index].y) * SMOOTH,
+                    x: prev[index].x + (point.x - prev[index].x) * alpha,
+                    y: prev[index].y + (point.y - prev[index].y) * alpha,
+                    z: prev[index].z + (point.z - prev[index].z) * alpha,
                 }));
             }
 
@@ -91,15 +102,17 @@ export function useHandTracking(
       setModelReady(true);
       loop();
     }
-    init();
-    
+    init().catch(() => {
+      if (!cancelled) setModelFailed(true);
+    });
+
     return () => {
       cancelled = true;
       cancelAnimationFrame(frameId);
       recognizer?.close();
     };
- },[enabled, videoRef]);
+ },[enabled, videoRef, attempt]);
 
-  return {gesture, handRef, modelReady};
+  return {gesture, handRef, modelReady, modelFailed, retryModel};
 
 }

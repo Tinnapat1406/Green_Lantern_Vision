@@ -25,6 +25,9 @@ Once the ring is found, a glowing green band appears around that finger and slow
 | ☝️ Pointing up | **Beam** | A soft-edged energy beam with a white-hot core that flickers as it shoots out along your index finger, with a burst of light where it leaves the ring |
 | ✊ Closed fist | **Power Orb** | Three layers of light (a white-hot core, a fast-beating aura and a slow-breathing outer halo) that pulse out of sync, so the orb never looks the same twice |
 | 🤲 Palm up | **Sand Tornado** | 3,000 grains of green energy spiral up from your palm in a widening funnel. The top trails behind your hand when you move, so the tornado bends like a real one |
+| ✌️ Victory | **Hammer** | An energy hammer that winds up, smashes and recovers on a loop, with a shockwave on every impact |
+| 👍 Thumb up | **Wall** | A wall of glowing bricks that builds itself row by row from the bottom up, each brick landing a beat after the last |
+| 🤟 I love you | **Chain** | A wrecking ball on a chain of 12 links, simulated with real rope physics, swinging and settling under gravity as you move your hand |
 
 A guide in the bottom-left corner lists every gesture and lights up the one you're making.
 
