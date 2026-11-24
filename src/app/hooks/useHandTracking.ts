@@ -36,14 +36,16 @@ export function useHandTracking(
     let candidate: string | null = null;   
     let candidateSince = 0;                 
     const HOLD_MS = 150;
-    const SMOOTH = 0.5; 
+    const SMOOTH_SPEED = 21; // same feel as the old 0.5-per-frame lerp at 30 fps
     const GRACE_MS = 200;
     let lostSince = 0;
 
     function loop(){
         const video = videoRef.current;
         if (recognizer && video && !cancelled && video.readyState >= 2 && video.currentTime !== lastVideoTime) {
-                lastVideoTime = video.currentTime;
+            const dt = lastVideoTime < 0 ? 0 : Math.min(video.currentTime - lastVideoTime, 0.1);
+            const alpha = 1 - Math.exp(-SMOOTH_SPEED * dt);
+            lastVideoTime = video.currentTime;
             const result = recognizer.recognizeForVideo(video, performance.now());
             const now = performance.now();
             const top = result.gestures[0]?.[0];
@@ -73,8 +75,9 @@ export function useHandTracking(
             } else {
                 handRef.current = next.map((point, index) => ({
                     ...point,
-                    x: prev[index].x + (point.x - prev[index].x) * SMOOTH,
-                    y: prev[index].y + (point.y - prev[index].y) * SMOOTH,
+                    x: prev[index].x + (point.x - prev[index].x) * alpha,
+                    y: prev[index].y + (point.y - prev[index].y) * alpha,
+                    z: prev[index].z + (point.z - prev[index].z) * alpha,
                 }));
             }
 
