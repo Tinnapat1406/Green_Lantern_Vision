@@ -15,11 +15,11 @@ export function CameraFeed() {
     const streamRef = useRef<MediaStream | null>(null);
     const [status, setStatus] = useState("starting");
     const [aspect, setAspect] = useState(16 / 9);
-    const { gesture, handRef, modelReady } = useHandTracking(videoRef, status === "ready");
+    const { gesture, handRef, modelReady, modelFailed, retryModel } = useHandTracking(videoRef, status === "ready");
     const [manualRing, setManualRing] = useState(false);
     const  detectFinger = useRingDetection(videoRef, handRef, status === "ready" && !manualRing);
     const ringFinger = manualRing ? FINGERS[2] : detectFinger
-    const loading = status === "starting" || (status === "ready" && !modelReady);
+    const loading = status === "starting" || (status === "ready" && !modelReady && !modelFailed);
     const cameraFailed = status === "denied" || status === "error";
 
     // Demo: clicking a gesture in the guide previews its construct.
@@ -95,6 +95,23 @@ export function CameraFeed() {
                     <p className="animate-pulse font-mono text-xl text-green-400">
                         {status === "starting" && "Starting camera..."}
                         {status === "ready" && !modelReady && "Loading model..."}
+                    </p>
+                </div>
+            )}
+
+            {modelFailed && !demo && (
+                <div className="absolute inset-x-0 top-1/3 flex flex-col items-center gap-4">
+                    <p className="font-mono text-xl text-green-400">
+                        Failed to load the hand-tracking model.
+                    </p>
+                    <button
+                        onClick={retryModel}
+                        className="rounded-full border border-green-400 bg-green-400/20 px-4 py-2 font-mono text-sm text-green-300 transition hover:bg-green-400/30"
+                    >
+                        Try again
+                    </button>
+                    <p className="font-mono text-sm text-white/40">
+                        Check your connection — the model loads from a CDN
                     </p>
                 </div>
             )}

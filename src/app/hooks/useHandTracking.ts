@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { isPalmUp } from "@/app/lib/palm";
 import type { GestureRecognizer, NormalizedLandmark } from "@mediapipe/tasks-vision";
 
@@ -16,7 +16,14 @@ export function useHandTracking(
 ) {
     const [gesture, setGesture] = useState<string | null>(null);
     const [modelReady, setModelReady] = useState(false);
+    const [modelFailed, setModelFailed] = useState(false);
+    const [attempt, setAttempt] = useState(0);
     const handRef = useRef<NormalizedLandmark[] | null>(null);
+
+    const retryModel = useCallback(() => {
+        setModelFailed(false);
+        setAttempt((n) => n + 1);
+    }, []);
 
   useEffect(() => {
     if (!enabled) return;
@@ -91,15 +98,17 @@ export function useHandTracking(
       setModelReady(true);
       loop();
     }
-    init();
-    
+    init().catch(() => {
+      if (!cancelled) setModelFailed(true);
+    });
+
     return () => {
       cancelled = true;
       cancelAnimationFrame(frameId);
       recognizer?.close();
     };
- },[enabled, videoRef]);
+ },[enabled, videoRef, attempt]);
 
-  return {gesture, handRef, modelReady};
+  return {gesture, handRef, modelReady, modelFailed, retryModel};
 
 }
