@@ -50,7 +50,8 @@ export function useHandTracking(
             const now = performance.now();
             const top = result.gestures[0]?.[0];
             const world = result.worldLandmarks[0];
-            const palmUp = world && isPalmUp(world) && top?.categoryName !== "Closed_Fist";
+            const hand = result.handedness[0]?.[0]?.categoryName;
+            const palmUp = world && hand && isPalmUp(world, hand) && top?.categoryName !== "Closed_Fist";
             const name = palmUp ? "Palm_Up" : (top && top.score > 0.6 ? top.categoryName : null); 
             
             if (name !== candidate) {
