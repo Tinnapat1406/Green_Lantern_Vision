@@ -20,18 +20,23 @@ export function RingFlash({ handRef,finger }: ConstructProps) {
         const sprite = spriteRef.current;
         const landmarks = handRef.current;
 
-        if(!sprite || !landmarks) return;
+        if(!sprite || !landmarks || !sprite.visible) return;
 
             age.current += delta;
             const t = Math.min(1, age.current / DURATION);
+            if (t >= 1) {
+                // flash is over — hide it and stop tracking the hand every frame
+                sprite.visible = false;
+                return;
+            }
 
             const pos = ringAnchor(landmarks,finger,state.size);
             sprite.position.set(pos.x, pos.y, 1);
 
-            sprite.scale.setScalar((40 + t * 260) * handScale(landmarks,state.size)); 
+            sprite.scale.setScalar((40 + t * 260) * handScale(landmarks,state.size));
             sprite.material.opacity = 1 - t;
-            
-        
+
+
     });
 
     return(

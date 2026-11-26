@@ -23,6 +23,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* The MediaPipe WASM bundle and the gesture model load from these hosts
+            on startup — opening the connections early overlaps the TLS handshakes
+            with React hydration */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://storage.googleapis.com" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

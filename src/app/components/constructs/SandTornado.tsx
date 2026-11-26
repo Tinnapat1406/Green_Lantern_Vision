@@ -23,9 +23,8 @@ type Particles = {
   height: Float32Array;    
   speed: Float32Array;   
   spread : Float32Array  
-  positions: Float32Array; 
+  positions: Float32Array;
   colors: Float32Array;
-  tint: Float32Array;
 
 }
 
@@ -37,7 +36,6 @@ function makeParticles(): Particles {
     spread : new Float32Array(COUNT),
     positions: new Float32Array(COUNT * 3),
     colors: new Float32Array(COUNT * 4),
-    tint: new Float32Array(COUNT * 3),
 
   };
 
@@ -47,10 +45,12 @@ function makeParticles(): Particles {
     p.speed[i] = 3 + Math.random() * 4;
     p.spread[i] = 0.4 + Math.random() * 0.6;
     
+    // Each particle's tint never changes — write RGB once here; the frame
+    // loop only touches the alpha channel
     const c = PALETTE[Math.floor(Math.random() * PALETTE.length)];
-    p.tint[i * 3]     = c.r;
-    p.tint[i * 3 + 1] = c.g;
-    p.tint[i * 3 + 2] = c.b;
+    p.colors[i * 4]     = c.r;
+    p.colors[i * 4 + 1] = c.g;
+    p.colors[i * 4 + 2] = c.b;
 
   }
   return p;
@@ -107,11 +107,6 @@ export function SandTornado({handRef , leaving}:{ handRef: HandRef ; leaving: bo
     for (let i = 0; i < COUNT; i++) {
        p.angle[i] += p.speed[i] * delta
        p.height[i] += delta * 0.4
-
-      p.colors[i * 4]     = p.tint[i * 3];
-      p.colors[i * 4 + 1] = p.tint[i * 3 + 1];
-      p.colors[i * 4 + 2] = p.tint[i * 3 + 2];
-
 
       if(p.height[i] > 1){
         p.height[i] -= 1
