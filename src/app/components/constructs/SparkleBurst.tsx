@@ -62,6 +62,7 @@ export function SparkleBurst({ handRef, finger }: ConstructProps) {
       points.scale.setScalar(handScale(landmarks, state.size));
     }
 
+    if (!points.visible) return;   // burst already finished — do no work until remounted
     age.current += delta;
     const t = Math.min(1, age.current / DURATION);
     if (t >= 1) {

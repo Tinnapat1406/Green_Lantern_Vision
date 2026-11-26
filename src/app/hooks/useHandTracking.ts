@@ -72,14 +72,19 @@ export function useHandTracking(
                 if (now - lostSince > GRACE_MS) handRef.current = null;
 
             } else if (!prev) {
-                handRef.current = next;           
+                handRef.current = next;
             } else {
-                handRef.current = next.map((point, index) => ({
-                    ...point,
-                    x: prev[index].x + (point.x - prev[index].x) * alpha,
-                    y: prev[index].y + (point.y - prev[index].y) * alpha,
-                    z: prev[index].z + (point.z - prev[index].z) * alpha,
-                }));
+                // Both sides kept: main's time-based alpha (z smoothed too), applied
+                // in place so the array identity stays stable and no objects are
+                // allocated per video frame (21 landmarks × ~30 fps)
+                for (let i = 0; i < next.length; i++) {
+                    const p = prev[i];
+                    const n = next[i];
+                    p.x += (n.x - p.x) * alpha;
+                    p.y += (n.y - p.y) * alpha;
+                    p.z += (n.z - p.z) * alpha;
+                    p.visibility = n.visibility;
+                }
             }
 
         }

@@ -89,7 +89,15 @@ export function RingScene({ handRef, gesture, ringFinger }: SceneProps) {
   
   return (
     <div className="pointer-events-none absolute inset-0">
-      <Canvas orthographic camera={{ position: [0, 0, 100], zoom: 1 }}>
+      {/* Soft additive glows don't need retina resolution or MSAA — the scene is
+          fill-rate bound, so capping DPR at 1.5 roughly halves the pixels shaded
+          on a 2x display with no visible difference on blurred sprites. */}
+      <Canvas
+        orthographic
+        camera={{ position: [0, 0, 100], zoom: 1 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: false, stencil: false, powerPreference: "high-performance" }}
+      >
         
         {ringFinger && (
           <>
